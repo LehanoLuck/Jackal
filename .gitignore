@@ -61,3 +61,16 @@ sysinfo.txt
 # Crashlytics generated file
 crashlytics-build.properties
 
+*.cs diff=csharp text
+*.cginc text
+*.shader text
+
+*.mat merge=unityyamlmerge
+*.anim merge=unityyamlmerge
+*.unity merge=unityyamlmerge
+*.prefab merge=unityyamlmerge
+*.physicsMaterial2D merge=unityyamlmerge
+*.physicsMaterial merge=unityyamlmerge
+*.asset merge=unityyamlmerge
+*.meta merge=unityyamlmerge
+*.controller merge=unityyamlmerge
