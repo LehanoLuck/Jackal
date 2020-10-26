@@ -1,20 +1,28 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.UIElements;
 
 namespace Assets.Scripts
 {
-    public class VoxelTile : MonoBehaviour
+
+    public class VoxelTile : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     {
-         
-        // Start is called before the first frame update
-        void Start()
+        public int HorizontalIndex { get; set; }
+        public int VerticalIndex { get; set; }
+
+        private float yPos;
+
+        public void OnPointerEnter(PointerEventData eventData)
         {
-        
+            Debug.Log($"hor - {HorizontalIndex}\n ver - {VerticalIndex}");
+            yPos = this.transform.position.y;
+            this.transform.position = new Vector3(transform.position.x, transform.position.y + 0.25f, transform.position.z);
         }
 
-        // Update is called once per frame
-        void Update()
+        public void OnPointerExit(PointerEventData eventData)
         {
-        
+            this.transform.position = new Vector3(transform.position.x, yPos, transform.position.z);
         }
     }
 }
