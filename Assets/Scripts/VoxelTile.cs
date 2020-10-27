@@ -15,7 +15,6 @@ namespace Assets.Scripts
 
         public void OnPointerEnter(PointerEventData eventData)
         {
-            Debug.Log($"hor - {HorizontalIndex}\n ver - {VerticalIndex}");
             yPos = this.transform.position.y;
             this.transform.position = new Vector3(transform.position.x, transform.position.y + 0.25f, transform.position.z);
         }

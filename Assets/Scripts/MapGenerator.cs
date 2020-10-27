@@ -44,7 +44,7 @@ public class MapGenerator : MonoBehaviour
         int index = Random.Range(0, tiles.Count);
 
         Pirate pirate = Instantiate(PirateTemplate, this.transform);
-        pirate.transform.position = tiles[index].transform.position;
+        pirate.transform.position = new Vector3(tiles[index].transform.position.x, tiles[index].transform.position.y - 1f, tiles[index].transform.position.z);
         pirate.CurrentTile = tiles[index];
     }
 }

@@ -293,6 +293,7 @@ GameObject:
   - component: {fileID: 963194227}
   - component: {fileID: 963194226}
   - component: {fileID: 963194229}
+  - component: {fileID: 963194230}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -359,7 +360,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 963194225}
   m_LocalRotation: {x: 0.5, y: 0, z: 0, w: 0.8660254}
-  m_LocalPosition: {x: 16.33, y: 24.2, z: -1.8}
+  m_LocalPosition: {x: 16.3, y: 24.2, z: -1.8}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -381,6 +382,22 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 4294967295
   m_MaxRayIntersections: 0
+--- !u!114 &963194230
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 963194225}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7638c2708162e9541912b68b6da4110b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sensetive: 0.7
+  zoomSensitive: 6
+  camera: {fileID: 963194227}
+  damping: 15
 --- !u!1 &1243165922
 GameObject:
   m_ObjectHideFlags: 0
@@ -414,8 +431,8 @@ MonoBehaviour:
   - {fileID: 2659812429976089076, guid: 475c9ac0e1c43b54bafd1a899a8b9117, type: 3}
   - {fileID: 5117506726471569455, guid: c2bd909303a7b87459eb346e35584cfd, type: 3}
   PirateTemplate: {fileID: 5127521087970736391, guid: 186359f6c0e5a3f43955f128267926f9, type: 3}
-  Width: 12
-  Length: 12
+  Width: 10
+  Length: 10
 --- !u!4 &1243165924
 Transform:
   m_ObjectHideFlags: 0
