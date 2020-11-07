@@ -394,10 +394,42 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7638c2708162e9541912b68b6da4110b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sensetive: 0.7
-  zoomSensitive: 6
-  camera: {fileID: 963194227}
-  damping: 15
+  useFixedUpdate: 0
+  keyboardMovementSpeed: 15
+  screenEdgeMovementSpeed: 9
+  followingSpeed: 15
+  rotationSped: 9
+  panningSpeed: 30
+  mouseRotationSpeed: 30
+  autoHeight: 1
+  maxHeight: 20
+  minHeight: 5
+  heightDampening: 5
+  keyboardZoomingSensitivity: 2
+  scrollWheelZoomingSensitivity: 25
+  limitMap: 1
+  limitX: 50
+  limitY: 50
+  targetFollow: {fileID: 0}
+  targetOffset: {x: 0, y: 0, z: 0}
+  useScreenEdgeInput: 1
+  screenEdgeBorder: 25
+  outScreenEdgeBorder: 200
+  useKeyboardInput: 1
+  horizontalAxis: Horizontal
+  verticalAxis: Vertical
+  usePanning: 1
+  panningKey: 325
+  useKeyboardZooming: 1
+  zoomInKey: 101
+  zoomOutKey: 113
+  useScrollwheelZooming: 1
+  zoomingAxis: Mouse ScrollWheel
+  useKeyboardRotation: 1
+  rotateRightKey: 120
+  rotateLeftKey: 122
+  useMouseRotation: 1
+  mouseRotationKey: 324
 --- !u!1 &1243165922
 GameObject:
   m_ObjectHideFlags: 0
