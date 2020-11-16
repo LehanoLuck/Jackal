@@ -8,7 +8,7 @@ public class MapGenerator : MonoBehaviour
     public VoxelTile TileTemplate;
     public VoxelTile[] HiddenTemplates;
     public Pirate PirateTemplate;
-    private Transform Parent;
+    public int countPirates = 10;
     public int Width;
     public int Length;
 
@@ -18,7 +18,7 @@ public class MapGenerator : MonoBehaviour
     void Start()
     {
         GenerateMatrix();
-        for(int i=0;i<10;i++)
+        for (int i = 0; i < countPirates; i++)
         {
             AddPirateOnMap();
         }
