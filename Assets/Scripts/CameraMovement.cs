@@ -10,7 +10,6 @@ namespace Assets.Scripts
         private Transform m_Transform; //camera tranform
         public bool useFixedUpdate = false; //use FixedUpdate() or Update()
 
-        private bool isRotating = false;
         #region Movement
 
         public float keyboardMovementSpeed = 5f; //speed with keyboard movement

@@ -16,6 +16,8 @@ public class Pirate : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHa
 
     public VoxelTile CurrentTile { get; set; }
 
+    private VoxelTile tempTile;
+
     void Start()
     {
         GameCamera = Camera.main;
@@ -31,8 +33,14 @@ public class Pirate : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHa
         if (groundPlane.Raycast(ray, out float position))
         {
             Vector3 worldPosition = ray.GetPoint(position);
+            worldPosition.y += 1.5f;
 
             transform.position = worldPosition;
+        }
+
+        if(eventData.pointerEnter && eventData.pointerEnter.GetComponent<VoxelTile>())
+        {
+            tempTile = eventData.pointerEnter.GetComponent<VoxelTile>();
         }
     }
 
@@ -48,13 +56,17 @@ public class Pirate : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHa
 
         if (eventData.pointerEnter)
         {
-            var tile = eventData.pointerEnter.GetComponent<VoxelTile>();
-            if(Math.Abs(tile.HorizontalIndex - CurrentTile.HorizontalIndex) < 2 && Math.Abs(tile.VerticalIndex - CurrentTile.VerticalIndex) < 2)
+            if(Math.Abs(tempTile.HorizontalIndex - CurrentTile.HorizontalIndex) < 2 && Math.Abs(tempTile.VerticalIndex - CurrentTile.VerticalIndex) < 2 && tempTile.Pirates.Count < tempTile.maxSize)
             {
-                var placePosition = new Vector3(eventData.pointerEnter.transform.position.x, eventData.pointerEnter.transform.position.y - 1.25f, eventData.pointerEnter.transform.position.z);
-                this.transform.position = placePosition;
-                StartPosition = this.transform.position;
-                CurrentTile = tile;
+                if(CurrentTile != eventData.pointerEnter.GetComponent<VoxelTile>())
+                {
+                    CurrentTile.LeavePirate(this);
+                    tempTile.AddPirate(this);
+                }
+                else
+                {
+                    this.transform.position = StartPosition;
+                }
             }
             else
             {
@@ -66,4 +78,5 @@ public class Pirate : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHa
             this.transform.position = StartPosition;
         }
     }
+
 }

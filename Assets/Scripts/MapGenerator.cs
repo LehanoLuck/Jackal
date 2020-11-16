@@ -5,16 +5,23 @@ using UnityEngine;
 
 public class MapGenerator : MonoBehaviour
 {
-    public VoxelTile[] TileTemplates;
+    public VoxelTile TileTemplate;
+    public VoxelTile[] HiddenTemplates;
     public Pirate PirateTemplate;
     private Transform Parent;
     public int Width;
     public int Length;
 
+    public VoxelTile[][] Map;
+
     // Start is called before the first frame update
     void Start()
     {
         GenerateMatrix();
+        for(int i=0;i<10;i++)
+        {
+            AddPirateOnMap();
+        }
     }
 
     // Update is called once per frame
@@ -25,26 +32,32 @@ public class MapGenerator : MonoBehaviour
 
     private void GenerateMatrix()
     {
-        float tileXSize = TileTemplates[0].transform.localScale.x * 3.2f;
-        float tileYSize = TileTemplates[0].transform.localScale.y * 3.2f;
+        float tileXSize = TileTemplate.transform.localScale.x * 3.2f;
+        float tileYSize = TileTemplate.transform.localScale.y * 3.2f;
 
-        List<VoxelTile> tiles = new List<VoxelTile>();
+        Map = new VoxelTile[Width][];
+
         for (int i = 0; i < this.Width; i++)
         {
+            Map[i] = new VoxelTile[Length];
             for (int j = 0; j < this.Length; j++)
             {
-                VoxelTile tile = Instantiate(TileTemplates[0], this.transform);
+                VoxelTile tile = Instantiate(TileTemplate, this.transform);
                 tile.HorizontalIndex = i;
                 tile.VerticalIndex = j;
                 tile.transform.position = new Vector3(tileXSize * i, 0, tileYSize * j);
-                tiles.Add(tile);
+                Map[i][j] = tile;
             }
         }
+    }
 
-        int index = Random.Range(0, tiles.Count);
+    private void AddPirateOnMap()
+    {
+        int i = Random.Range(0, Width);
+        int j = Random.Range(0, Length);
 
         Pirate pirate = Instantiate(PirateTemplate, this.transform);
-        pirate.transform.position = new Vector3(tiles[index].transform.position.x, tiles[index].transform.position.y - 1f, tiles[index].transform.position.z);
-        pirate.CurrentTile = tiles[index];
+
+        Map[i][j].AddPirate(pirate);
     }
 }
