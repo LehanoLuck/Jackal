@@ -47,6 +47,9 @@ public class MapGenerator : MonoBehaviour
                 tile.VerticalIndex = j;
                 tile.transform.position = new Vector3(tileXSize * i, 0, tileYSize * j);
                 Map[i][j] = tile;
+                tile.Map = this.Map;
+                tile.HiddenTile = HiddenTemplates[Random.Range(0, this.HiddenTemplates.Length)];
+                tile.isHidden = false;
             }
         }
     }

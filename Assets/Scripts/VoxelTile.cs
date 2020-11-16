@@ -11,14 +11,17 @@ namespace Assets.Scripts
     {
         public List<Pirate> Pirates { get; set; } = new List<Pirate>();
 
-        public GameObject HiddenTile;
-        public GameObject DefaultTile;
+        public VoxelTile HiddenTile;
+
+        public VoxelTile[][] Map { get; set; }
         public int HorizontalIndex { get; set; }
         public int VerticalIndex { get; set; }
 
         public int maxSize = 5;
 
         private float yPos;
+
+        public bool isHidden;
 
         public void OnPointerEnter(PointerEventData eventData)
         {
@@ -33,11 +36,18 @@ namespace Assets.Scripts
 
         public void AddPirate(Pirate pirate)
         {
-            pirate.CurrentTile = this;
-
             this.Pirates.Add(pirate);
 
             UpdateTile();
+
+            if (!isHidden)
+            {
+                pirate.CurrentTile = OpenTile();
+            }
+            else
+            {
+                pirate.CurrentTile = this;
+            }
         }
 
         public void LeavePirate(Pirate pirate)
@@ -68,6 +78,20 @@ namespace Assets.Scripts
 
                 Pirates[i].transform.position = new Vector3(x, this.transform.position.y - 1.25f, z);
             }
+        }
+
+        public VoxelTile OpenTile()
+        {
+            var hidden = Instantiate(HiddenTile, this.transform.parent);
+            hidden.transform.position = this.transform.position;
+            hidden.HorizontalIndex = this.HorizontalIndex;
+            hidden.VerticalIndex = this.VerticalIndex;
+            Map[HorizontalIndex][VerticalIndex] = hidden;
+            hidden.Pirates = this.Pirates;
+
+            Destroy(gameObject);
+
+            return hidden;
         }
     }
 }
