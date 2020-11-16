@@ -7,13 +7,21 @@ public class MapGenerator : MonoBehaviour
 {
     public GroundTile GroundTileTemplate;
     public WaterTile WaterTileTemplate;
+    public ShipTile ShipTileTemplate;
     public GroundTile[] HiddenTemplates;
     public Pirate PirateTemplate;
     public int countPirates = 10;
     public int Width;
     public int Length;
+    public int shipCount = 3;
 
     public BaseTile[][] Map;
+
+    private bool isLeftSideCreatedShip = false;
+    private bool isRightSideCreatedShip = false;
+    private bool isBottomSideCreatedShip = false;
+    private bool isTopSideCreatedShip = false;
+
 
     // Start is called before the first frame update
     void Start()
@@ -42,7 +50,36 @@ public class MapGenerator : MonoBehaviour
             {
                 if (i == 0 || i == Width - 1 || j == 0 || j == Length - 1)
                 {
-                    CreateWaterTile(i, j);
+                    var isTrue = Random.Range(0f, 1f) > 0.7;
+                    if (i == 0 && j != 0 && !isLeftSideCreatedShip && isTrue)
+                    {
+                        Debug.Log($"i - {i}\nj - {j}");
+                        CreateShipTile(i, j);
+                        isLeftSideCreatedShip = true;
+                    }
+                    else if (i == Width - 1 && j != Length - 1 && !isRightSideCreatedShip && isTrue)
+                    {
+                        Debug.Log($"i - {i}\nj - {j}");
+                        CreateShipTile(i, j);
+                        isRightSideCreatedShip = true;
+                    }
+                    else if (j == 0 && i != 0 && !isBottomSideCreatedShip && isTrue)
+                    {
+                        Debug.Log($"i - {i}\nj - {j}");
+                        CreateShipTile(i, j);
+                        isBottomSideCreatedShip = true;
+
+                    }
+                    else if (j == Length - 1 && i != Width - 1 && !isTopSideCreatedShip && isTrue)
+                    {
+                        Debug.Log($"i - {i}\nj - {j}");
+                        CreateShipTile(i, j);
+                        isTopSideCreatedShip = true;
+                    }
+                    else
+                    {
+                        CreateWaterTile(i, j);
+                    }
                 }
                 else
                 {
@@ -79,18 +116,28 @@ public class MapGenerator : MonoBehaviour
         PlaceTile(tile, i, j);
     }
 
-    private void AddShips()
+    public void CreateShipTile(int i, int j)
     {
+        ShipTile tile = Instantiate(ShipTileTemplate, this.transform);
+        PlaceTile(tile, i, j);
 
+        for(int k = 0; k < shipCount; k++)
+        {
+            AddPirateOnTile(i, j);
+        }
     }
 
+    private void AddPirateOnTile(int i, int j)
+    {
+        Pirate pirate = Instantiate(PirateTemplate, this.transform);
+
+        Map[i][j].EnterPirate(pirate);
+    }
     private void AddPirateOnMap()
     {
         int i = Random.Range(1, Width-1);
         int j = Random.Range(1, Length-1);
 
-        Pirate pirate = Instantiate(PirateTemplate, this.transform);
-
-        Map[i][j].EnterPirate(pirate);
+        this.AddPirateOnTile(i, j);
     }
 }
