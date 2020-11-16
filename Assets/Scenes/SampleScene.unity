@@ -462,8 +462,9 @@ MonoBehaviour:
   TileTemplate: {fileID: 8374229652451591, guid: 475c9ac0e1c43b54bafd1a899a8b9117, type: 3}
   HiddenTemplates:
   - {fileID: 5839379113604420176, guid: 3d086a4195bf5194d9e488c3d97b5585, type: 3}
+  - {fileID: 1546859273666413450, guid: 155e3d275f9a81a4b94d0e4b6876c7f7, type: 3}
   PirateTemplate: {fileID: 5127521087970736391, guid: 186359f6c0e5a3f43955f128267926f9, type: 3}
-  countPirates: 3
+  countPirates: 100
   Width: 6
   Length: 6
 --- !u!4 &1243165924

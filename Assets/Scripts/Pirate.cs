@@ -14,9 +14,9 @@ public class Pirate : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHa
 
     private Vector3 StartPosition;
 
-    public VoxelTile CurrentTile { get; set; }
+    public BaseTile CurrentTile { get; set; }
 
-    private VoxelTile tempTile;
+    private BaseTile tempTile;
 
     void Start()
     {
@@ -38,9 +38,10 @@ public class Pirate : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHa
             transform.position = worldPosition;
         }
 
-        if(eventData.pointerEnter && eventData.pointerEnter.GetComponent<VoxelTile>())
+        //Получение временной ячейки, костыль чтобы запомнить ячейку при отпускании пирата
+        if(eventData.pointerEnter && eventData.pointerEnter.GetComponent<BaseTile>())
         {
-            tempTile = eventData.pointerEnter.GetComponent<VoxelTile>();
+            tempTile = eventData.pointerEnter.GetComponent<BaseTile>();
         }
     }
 
@@ -56,27 +57,24 @@ public class Pirate : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHa
 
         if (eventData.pointerEnter)
         {
-            if(Math.Abs(tempTile.HorizontalIndex - CurrentTile.HorizontalIndex) < 2 && Math.Abs(tempTile.VerticalIndex - CurrentTile.VerticalIndex) < 2 && tempTile.Pirates.Count < tempTile.maxSize)
+            if (TryMoveOnTile(tempTile))
             {
-                if(CurrentTile != eventData.pointerEnter.GetComponent<VoxelTile>())
-                {
-                    CurrentTile.LeavePirate(this);
-                    tempTile.AddPirate(this);
-                }
-                else
-                {
-                    this.transform.position = StartPosition;
-                }
+                CurrentTile.LeavePirate(this);
+                tempTile.EnterPirate(this);
             }
             else
             {
                 this.transform.position = StartPosition;
             }
         }
-        else
-        {
-            this.transform.position = StartPosition;
-        }
     }
 
+    private bool TryMoveOnTile(BaseTile tile)
+    {
+        return (CurrentTile != tile &&
+            (Math.Abs(tempTile.HorizontalIndex - CurrentTile.HorizontalIndex) < 2) && 
+            (Math.Abs(tempTile.VerticalIndex - CurrentTile.VerticalIndex) < 2) && 
+            !(tile is WaterTile) &&
+            (tempTile.Pirates.Count < tempTile.maxSize));
+    }
 }
