@@ -459,14 +459,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6d240a79450608043b1b7896011e8693, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  TileTemplate: {fileID: 8374229652451591, guid: 475c9ac0e1c43b54bafd1a899a8b9117, type: 3}
+  GroundTileTemplate: {fileID: 8374229652451591, guid: 475c9ac0e1c43b54bafd1a899a8b9117, type: 3}
+  WaterTileTemplate: {fileID: 5138706614829363376, guid: fa0ca7fb13872ce4f9042983ffaea756, type: 3}
+  ShipTileTemplate: {fileID: 4190543239590579343, guid: 3363998fc00907a43af76f4e1a920de2, type: 3}
   HiddenTemplates:
   - {fileID: 5839379113604420176, guid: 3d086a4195bf5194d9e488c3d97b5585, type: 3}
   - {fileID: 1546859273666413450, guid: 155e3d275f9a81a4b94d0e4b6876c7f7, type: 3}
   PirateTemplate: {fileID: 5127521087970736391, guid: 186359f6c0e5a3f43955f128267926f9, type: 3}
-  countPirates: 100
-  Width: 6
-  Length: 6
+  countPirates: 1
+  Width: 7
+  Length: 7
+  shipCount: 3
 --- !u!4 &1243165924
 Transform:
   m_ObjectHideFlags: 0

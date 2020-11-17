@@ -17,7 +17,7 @@ public class BaseTile : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 
     public int maxSize = 5;
 
-    protected Vector3 fixedPosition;
+    internal Vector3 fixedPosition;
     protected Vector3 updatePosition;
 
     public void SetTransformPosition(Vector3 position)

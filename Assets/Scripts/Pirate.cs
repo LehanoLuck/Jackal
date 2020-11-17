@@ -10,7 +10,7 @@ public class Pirate : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHa
 {
     private Camera GameCamera;
 
-    MeshCollider Collider;
+    public MeshCollider Collider;
 
     private Vector3 StartPosition;
 
@@ -66,6 +66,10 @@ public class Pirate : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHa
             {
                 this.transform.position = StartPosition;
             }
+        }
+        else
+        {
+            this.transform.position = StartPosition;
         }
     }
 

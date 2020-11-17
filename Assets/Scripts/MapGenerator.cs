@@ -53,26 +53,22 @@ public class MapGenerator : MonoBehaviour
                     var isTrue = Random.Range(0f, 1f) > 0.7;
                     if (i == 0 && j != 0 && !isLeftSideCreatedShip && isTrue)
                     {
-                        Debug.Log($"i - {i}\nj - {j}");
                         CreateShipTile(i, j);
                         isLeftSideCreatedShip = true;
                     }
                     else if (i == Width - 1 && j != Length - 1 && !isRightSideCreatedShip && isTrue)
                     {
-                        Debug.Log($"i - {i}\nj - {j}");
                         CreateShipTile(i, j);
                         isRightSideCreatedShip = true;
                     }
                     else if (j == 0 && i != 0 && !isBottomSideCreatedShip && isTrue)
                     {
-                        Debug.Log($"i - {i}\nj - {j}");
                         CreateShipTile(i, j);
                         isBottomSideCreatedShip = true;
 
                     }
                     else if (j == Length - 1 && i != Width - 1 && !isTopSideCreatedShip && isTrue)
                     {
-                        Debug.Log($"i - {i}\nj - {j}");
                         CreateShipTile(i, j);
                         isTopSideCreatedShip = true;
                     }
