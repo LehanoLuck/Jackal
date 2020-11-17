@@ -14,6 +14,8 @@ public class MapGenerator : MonoBehaviour
     public int Width;
     public int Length;
     public int shipCount = 3;
+    public int waterWidth = 1;
+    public int waterLength = 1;
 
     public BaseTile[][] Map;
 
@@ -48,7 +50,7 @@ public class MapGenerator : MonoBehaviour
             Map[i] = new BaseTile[Length];
             for (int j = 0; j < this.Length; j++)
             {
-                if (i == 0 || i == Width - 1 || j == 0 || j == Length - 1)
+                if (i < waterWidth || i >= Width - waterWidth || j < waterWidth || j >= Length - waterWidth)
                 {
                     var isTrue = Random.Range(0f, 1f) > 0.7;
                     if (i == 0 && j != 0 && !isLeftSideCreatedShip && isTrue)
@@ -131,8 +133,8 @@ public class MapGenerator : MonoBehaviour
     }
     private void AddPirateOnMap()
     {
-        int i = Random.Range(1, Width-1);
-        int j = Random.Range(1, Length-1);
+        int i = Random.Range(waterWidth, Width - waterWidth);
+        int j = Random.Range(waterLength, Length - waterLength);
 
         this.AddPirateOnTile(i, j);
     }
