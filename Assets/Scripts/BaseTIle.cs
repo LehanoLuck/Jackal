@@ -44,6 +44,11 @@ public class BaseTile : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
         PlacePirateOnTile();
     }
 
+    public void LeaveAllPirates()
+    {
+        this.Pirates.Clear();
+    }
+
     public void LeavePirate(Pirate pirate)
     {
         this.Pirates.Remove(pirate);

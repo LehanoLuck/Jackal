@@ -18,6 +18,8 @@ public class Pirate : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHa
 
     private BaseTile tempTile;
 
+    public ShipTile ship;
+
     void Start()
     {
         GameCamera = Camera.main;
@@ -59,6 +61,7 @@ public class Pirate : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHa
         {
             if (TryMoveOnTile(tempTile))
             {
+                TryAttack(tempTile);
                 CurrentTile.LeavePirate(this);
                 tempTile.EnterPirate(this);
             }
@@ -80,5 +83,32 @@ public class Pirate : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHa
             (Math.Abs(tempTile.VerticalIndex - CurrentTile.VerticalIndex) < 2) && 
             !(tile is WaterTile) &&
             (tempTile.Pirates.Count < tempTile.maxSize));
+    }
+
+    public void TryAttack(BaseTile tile)
+    {
+        if (tile.Pirates.Count != 0)
+        {
+            var pirate = tile.Pirates[0];
+
+            if(pirate.ship != this.ship)
+            {
+                this.Attack(tile);
+            }
+        }
+    }
+
+    private void Attack(BaseTile tile)
+    {
+        foreach(Pirate pirate in tile.Pirates)
+        {
+            pirate.Die();
+        }
+        tile.LeaveAllPirates();
+    }
+
+    public void Die()
+    {
+        ship.EnterPirate(this);
     }
 }

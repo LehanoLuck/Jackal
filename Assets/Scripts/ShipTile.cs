@@ -7,8 +7,10 @@ using UnityEngine.EventSystems;
 public class ShipTile : BaseTile, IDragHandler, IBeginDragHandler, IEndDragHandler
 {
     private Camera GameCamera;
+    public Pirate PirateTemplate;
     private BaseTile tempTile;
-    private BoxCollider Collider;
+    public BoxCollider Collider;
+    public bool isInFreeSpace = false;
 
     void Start()
     {
@@ -54,15 +56,22 @@ public class ShipTile : BaseTile, IDragHandler, IBeginDragHandler, IEndDragHandl
     public void OnEndDrag(PointerEventData eventData)
     {
         Collider.enabled = true;
-        if (eventData.pointerEnter)
+        if (eventData.pointerEnter && eventData.pointerEnter.GetComponent<WaterTile>())
         {
-            if (TryMove(tempTile))
+            if (!isInFreeSpace)
             {
-                Move(tempTile);
+                if (TryReplace(tempTile))
+                {
+                    Replace(tempTile);
+                }
+                else
+                {
+                    this.SetTransformPosition(this.fixedPosition);
+                }
             }
             else
             {
-                this.SetTransformPosition(this.fixedPosition);
+                Move(tempTile);
             }
         }
         else
@@ -77,14 +86,13 @@ public class ShipTile : BaseTile, IDragHandler, IBeginDragHandler, IEndDragHandl
         }
     }
 
-    private bool TryMove(BaseTile tile)
+    private bool TryReplace(BaseTile tile)
     {
         return (Mathf.Abs(HorizontalIndex - tile.HorizontalIndex) < 2 &&
-            Mathf.Abs(VerticalIndex - tile.VerticalIndex) < 2 &&
-            (tile is WaterTile));
+            Mathf.Abs(VerticalIndex - tile.VerticalIndex) < 2);
     }
 
-    private void Move(BaseTile tile)
+    private void Replace(BaseTile tile)
     {
         int i = tile.HorizontalIndex;
         int j = tile.VerticalIndex;
@@ -102,4 +110,28 @@ public class ShipTile : BaseTile, IDragHandler, IBeginDragHandler, IEndDragHandl
         tile.SetTransformPosition(tempPos);
     }
 
+    public void Move(BaseTile tile)
+    {
+        this.HorizontalIndex = tile.HorizontalIndex;
+        this.VerticalIndex = tile.VerticalIndex;
+        this.Map = tile.Map;
+        Map[tile.HorizontalIndex][tile.VerticalIndex] = this;
+
+        this.SetTransformPosition(tile.fixedPosition);
+        Destroy(tile.gameObject);
+        isInFreeSpace = false;
+        Collider.enabled = true;
+
+        this.AddPirateOnTile(3);
+    }
+
+    private void AddPirateOnTile(int count)
+    {
+        for(int i = 0; i < count; i++)
+        {
+            Pirate pirate = Instantiate(PirateTemplate, this.transform.parent);
+            this.EnterPirate(pirate);
+            pirate.ship = this;
+        }
+    }
 }
