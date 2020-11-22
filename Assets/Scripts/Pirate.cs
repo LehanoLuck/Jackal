@@ -61,9 +61,11 @@ public class Pirate : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHa
         {
             if (TryMoveOnTile(tempTile))
             {
-                TryAttack(tempTile);
-                CurrentTile.LeavePirate(this);
-                tempTile.EnterPirate(this);
+                if (TryAttack(tempTile))
+                {
+                    CurrentTile.LeavePirate(this);
+                    tempTile.EnterPirate(this);
+                }
             }
             else
             {
@@ -85,9 +87,15 @@ public class Pirate : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHa
             (tempTile.Pirates.Count < tempTile.maxSize));
     }
 
-    public void TryAttack(BaseTile tile)
+    public bool TryAttack(BaseTile tile)
     {
-        if (tile.Pirates.Count != 0)
+        if(tile is ShipTile)
+        {
+            CurrentTile.LeavePirate(this);
+            Die();
+            return false;
+        }
+        else if (tile.Pirates.Count != 0)
         {
             var pirate = tile.Pirates[0];
 
@@ -96,6 +104,7 @@ public class Pirate : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHa
                 this.Attack(tile);
             }
         }
+        return true;
     }
 
     private void Attack(BaseTile tile)
@@ -109,6 +118,6 @@ public class Pirate : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHa
 
     public void Die()
     {
-        ship.EnterPirate(this);
+        this.ship.EnterPirate(this);
     }
 }
