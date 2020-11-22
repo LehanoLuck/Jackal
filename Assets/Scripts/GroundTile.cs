@@ -18,7 +18,7 @@ namespace Assets.Scripts
             base.EnterPirate(pirate);
         }
 
-        public GroundTile OpenTile()
+        public virtual GroundTile OpenTile()
         {
             var hidden = Instantiate(HiddenTile, this.transform.parent);
             hidden.SetTransformPosition(this.fixedPosition);
@@ -29,6 +29,7 @@ namespace Assets.Scripts
 
             Destroy(gameObject);
 
+            hidden.DoActionAfterOpenning();
             return hidden;
         }
 
@@ -36,12 +37,16 @@ namespace Assets.Scripts
         {
             if (!isHidden)
             {
-                pirate.CurrentTile = OpenTile();
+                pirate.CurrentTile = this.OpenTile();
             }
             else
             {
                 base.SetCurrentPirateTile(pirate);
             }
+        }
+
+        public virtual void DoActionAfterOpenning()
+        {
         }
     }
 }
