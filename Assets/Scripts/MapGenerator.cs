@@ -9,11 +9,11 @@ public class MapGenerator : MonoBehaviour
     public WaterTile WaterTileTemplate;
     public ShipTile ShipTileTemplate;
     public GroundTile[] HiddenTemplates;
-    public Pirate PirateTemplate;
-    public int countPirates = 10;
+    //public Pirate PirateTemplate;
+    //public int countPirates = 10;
     public int Width;
     public int Length;
-    public int shipCount = 3;
+    //public int shipCount = 3;
     public int waterWidth = 1;
     public int waterLength = 1;
 
@@ -44,7 +44,7 @@ public class MapGenerator : MonoBehaviour
             Map[i] = new BaseTile[Length];
             for (int j = 0; j < this.Length; j++)
             {
-                if (i < waterWidth || i >= Width - waterWidth || j < waterWidth || j >= Length - waterWidth)
+                if (i < waterWidth || i >= Width - waterWidth || j < waterLength || j >= Length - waterLength)
                 {
                     CreateWaterTile(i, j);
                 }
