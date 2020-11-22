@@ -23,10 +23,10 @@ public class MapGenerator : MonoBehaviour
     void Start()
     {
         GenerateMatrix();
-        for (int i = 0; i < countPirates; i++)
-        {
-            AddPirateOnMap();
-        }
+        //for (int i = 0; i < countPirates; i++)
+        //{
+        //    AddPirateOnMap();
+        //}
     }
 
     // Update is called once per frame
@@ -83,29 +83,29 @@ public class MapGenerator : MonoBehaviour
         PlaceTile(tile, i, j);
     }
 
-    public void CreateShipTile(int i, int j)
-    {
-        ShipTile tile = Instantiate(ShipTileTemplate, this.transform);
-        PlaceTile(tile, i, j);
+    //public void CreateShipTile(int i, int j)
+    //{
+    //    ShipTile tile = Instantiate(ShipTileTemplate, this.transform);
+    //    PlaceTile(tile, i, j);
 
-        for(int k = 0; k < shipCount; k++)
-        {
-            AddPirateOnTile(i, j);
-        }
-    }
+    //    for(int k = 0; k < shipCount; k++)
+    //    {
+    //        AddPirateOnTile(i, j);
+    //    }
+    //}
 
-    private void AddPirateOnTile(int i, int j)
-    {
-        Pirate pirate = Instantiate(PirateTemplate, this.transform);
+    //private void AddPirateOnTile(int i, int j)
+    //{
+    //    Pirate pirate = Instantiate(PirateTemplate, this.transform);
 
-        Map[i][j].EnterPirate(pirate);
-    }
+    //    Map[i][j].EnterPirate(pirate);
+    //}
 
-    private void AddPirateOnMap()
-    {
-        int i = Random.Range(waterWidth, Width - waterWidth);
-        int j = Random.Range(waterLength, Length - waterLength);
+    //private void AddPirateOnMap()
+    //{
+    //    int i = Random.Range(waterWidth, Width - waterWidth);
+    //    int j = Random.Range(waterLength, Length - waterLength);
 
-        this.AddPirateOnTile(i, j);
-    }
+    //    this.AddPirateOnTile(i, j);
+    //}
 }
