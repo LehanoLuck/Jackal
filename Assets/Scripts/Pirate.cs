@@ -6,8 +6,11 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UIElements;
 
-public class Pirate : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHandler
+
+public class Pirate : SelectableObject, IDragHandler, IBeginDragHandler, IEndDragHandler
 {
+    public GameObject MoveCoinsButtonTemplate;
+
     private Camera GameCamera;
 
     public MeshCollider Collider;
@@ -19,6 +22,10 @@ public class Pirate : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHa
     private BaseTile tempTile;
 
     public ShipTile ship;
+
+    public Coin SelfCoin;
+
+    public Player SelfPlayer;
 
     void Start()
     {
@@ -38,6 +45,11 @@ public class Pirate : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHa
             worldPosition.y += 1.5f;
 
             transform.position = worldPosition;
+
+            if (IsMoveWithItem())
+            {
+                SelfCoin.transform.position = this.transform.position;
+            }
         }
 
         //Получение временной ячейки, костыль чтобы запомнить ячейку при отпускании пирата
@@ -51,6 +63,11 @@ public class Pirate : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHa
     {
         Collider.enabled = false;
         StartPosition = this.transform.position;
+
+        if (IsMoveWithItem())
+        {
+            SelfCoin = CurrentTile.Coins[0];
+        }
     }
 
     public void OnEndDrag(PointerEventData eventData)
@@ -63,6 +80,9 @@ public class Pirate : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHa
             {
                 if (TryAttack(tempTile))
                 {
+                    if (IsMoveWithItem())
+                        ReplaceCoin(SelfCoin);
+
                     CurrentTile.LeavePirate(this);
                     tempTile.EnterPirate(this);
                 }
@@ -76,6 +96,15 @@ public class Pirate : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHa
         {
             this.transform.position = StartPosition;
         }
+
+        SelfCoin = null;
+    }
+
+    private void ReplaceCoin(Coin coin)
+    {
+        CurrentTile.Coins.Remove(coin);
+        tempTile.AddCoin(coin);
+        coin.transform.position = tempTile.transform.position;
     }
 
     private bool TryMoveOnTile(BaseTile tile)
@@ -119,5 +148,10 @@ public class Pirate : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHa
     public void Die()
     {
         this.ship.EnterPirate(this);
+    }
+
+    public bool IsMoveWithItem()
+    {
+        return CurrentTile.isHaveCoins && SelfPlayer.isMoveWithItem;
     }
 }

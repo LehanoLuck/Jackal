@@ -24,7 +24,7 @@ public class MapGenerator : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        groundTilesCount = Width * Length - ((Width * waterWidth + Length * waterLength) * 2 - 4 * (waterLength * waterLength));
+        groundTilesCount = (Width - waterWidth * 2) * (Length - waterLength * 2);
         GenerateMatrix();
     }
 

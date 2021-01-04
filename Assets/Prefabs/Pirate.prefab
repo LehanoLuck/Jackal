@@ -126,6 +126,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c0a78674ce4aeaa4cba8be2fc8cc79cf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  MoveCoinsButtonTemplate: {fileID: 1007654870425815615, guid: 70bd70bfa1bec4540918fad3822a3abc, type: 3}
+  Collider: {fileID: 9214888310208436483}
+  ship: {fileID: 0}
 --- !u!64 &9214888310208436483
 MeshCollider:
   m_ObjectHideFlags: 0

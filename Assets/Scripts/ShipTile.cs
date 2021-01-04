@@ -7,6 +7,8 @@ using UnityEngine.EventSystems;
 public class ShipTile : BaseTile, IDragHandler, IBeginDragHandler, IEndDragHandler
 {
     private Camera GameCamera;
+
+    public Player SelfPlayer;
     public Pirate PirateTemplate;
     private BaseTile tempTile;
     public BoxCollider Collider;
@@ -122,6 +124,8 @@ public class ShipTile : BaseTile, IDragHandler, IBeginDragHandler, IEndDragHandl
         isInFreeSpace = false;
         Collider.enabled = true;
 
+        SelfPlayer = FindObjectOfType<Player>();
+
         this.AddPirateOnTile(3);
     }
 
@@ -132,6 +136,19 @@ public class ShipTile : BaseTile, IDragHandler, IBeginDragHandler, IEndDragHandl
             Pirate pirate = Instantiate(PirateTemplate, this.transform.parent);
             this.EnterPirate(pirate);
             pirate.ship = this;
+            pirate.SelfPlayer = this.SelfPlayer;
         }
+    }
+
+    public override void EnterPirate(Pirate pirate)
+    {
+        base.EnterPirate(pirate);
+    }
+
+    public override void AddCoin(Coin coin)
+    {
+        Destroy(coin.gameObject);
+        var value = ++this.SelfPlayer.PlayerUI.CoinsCount;
+        this.SelfPlayer.PlayerUI.CoinsValue.text = value.ToString();
     }
 }

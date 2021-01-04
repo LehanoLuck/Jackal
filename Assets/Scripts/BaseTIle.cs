@@ -7,6 +7,8 @@ using UnityEngine.EventSystems;
 
 public class BaseTile : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
+    public List<Coin> Coins { get; set; } = new List<Coin>();
+
     public List<Pirate> Pirates { get; set; } = new List<Pirate>();
 
     public BaseTile[][] Map { get; set; }
@@ -19,6 +21,8 @@ public class BaseTile : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 
     internal Vector3 fixedPosition;
     protected Vector3 updatePosition;
+
+    public bool isHaveCoins => Coins.Count > 0;
 
     public void SetTransformPosition(Vector3 position)
     {
@@ -82,5 +86,10 @@ public class BaseTile : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     protected virtual void SetCurrentPirateTile(Pirate pirate)
     {
         pirate.CurrentTile = this;
+    }
+
+    public virtual void AddCoin(Coin coin)
+    {
+        this.Coins.Add(coin);
     }
 }

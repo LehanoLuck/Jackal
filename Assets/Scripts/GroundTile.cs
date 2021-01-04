@@ -13,11 +13,6 @@ namespace Assets.Scripts
 
         public bool isHidden;
 
-        public override void EnterPirate(Pirate pirate)
-        {
-            base.EnterPirate(pirate);
-        }
-
         public virtual GroundTile OpenTile()
         {
             var hidden = Instantiate(HiddenTile, this.transform.parent);
@@ -37,7 +32,8 @@ namespace Assets.Scripts
         {
             if (!isHidden)
             {
-                pirate.CurrentTile = this.OpenTile();
+                var hidden = this.OpenTile();
+                hidden.SetCurrentPirateTile(pirate);
             }
             else
             {
