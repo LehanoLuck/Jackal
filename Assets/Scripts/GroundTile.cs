@@ -34,6 +34,12 @@ namespace Assets.Scripts
             {
                 var hidden = this.OpenTile();
                 hidden.SetCurrentPirateTile(pirate);
+
+                //if(pirate.isMoveWithCoin)
+                //{
+                //    hidden.AddCoin(pirate.SelfCoin);
+                //    pirate.SelfCoin.transform.position = hidden.transform.position;
+                //}
             }
             else
             {

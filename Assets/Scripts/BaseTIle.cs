@@ -7,7 +7,7 @@ using UnityEngine.EventSystems;
 
 public class BaseTile : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
-    public List<Coin> Coins { get; set; } = new List<Coin>();
+    public Stack<Coin> Coins { get; set; } = new Stack<Coin>();
 
     public List<Pirate> Pirates { get; set; } = new List<Pirate>();
 
@@ -86,10 +86,23 @@ public class BaseTile : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     protected virtual void SetCurrentPirateTile(Pirate pirate)
     {
         pirate.CurrentTile = this;
+
+        if(pirate.isMoveWithCoin)
+        {
+            this.AddCoin(pirate.SelfCoin);
+            pirate.SelfCoin.transform.position = this.transform.position;
+        }
+
+        pirate.SelfCoin = null;
     }
 
     public virtual void AddCoin(Coin coin)
     {
-        this.Coins.Add(coin);
+        this.Coins.Push(coin);
+    }
+
+    public virtual Coin PopCoin()
+    {
+        return Coins.Pop();
     }
 }

@@ -304,7 +304,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   CurrentPirate: {fileID: 0}
   PirateUI: {fileID: 828999888}
-  PlayerUI: {fileID: 0}
+  PlayerUI: {fileID: 44499102}
   ShipUI: {fileID: 0}
   isMoveWithItem: 0
 --- !u!1 &132979357
@@ -913,7 +913,7 @@ MonoBehaviour:
   CoinTileTemplate: {fileID: 7527705423105074625, guid: 5556e98330d4814468e19e7c24c20232, type: 3}
   Width: 10
   Length: 10
-  waterWidth: 4
+  waterWidth: 0
   waterLength: 4
   coinsCount: 5
 --- !u!4 &1243165924

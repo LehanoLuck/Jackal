@@ -59,8 +59,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 37b31704cd8894343ae37e1c0ca34cca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  HiddenTile: {fileID: 0}
   maxSize: 5
+  HiddenTile: {fileID: 0}
   isHidden: 0
 --- !u!222 &9199049481750533218
 CanvasRenderer:

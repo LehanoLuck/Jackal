@@ -17,15 +17,18 @@ public class Pirate : SelectableObject, IDragHandler, IBeginDragHandler, IEndDra
 
     private Vector3 StartPosition;
 
+    public Coin SelfCoin { get; set; }
     public BaseTile CurrentTile { get; set; }
-
-    private BaseTile tempTile;
+    private BaseTile TargetTile { get; set; }
 
     public ShipTile ship;
 
-    public Coin SelfCoin;
-
     public Player SelfPlayer;
+
+    private bool isCanMove;
+    private bool isPlacebleTile;
+    private bool isAttack;
+    public bool isMoveWithCoin;
 
     void Start()
     {
@@ -45,17 +48,6 @@ public class Pirate : SelectableObject, IDragHandler, IBeginDragHandler, IEndDra
             worldPosition.y += 1.5f;
 
             transform.position = worldPosition;
-
-            if (IsMoveWithItem())
-            {
-                SelfCoin.transform.position = this.transform.position;
-            }
-        }
-
-        //Получение временной ячейки, костыль чтобы запомнить ячейку при отпускании пирата
-        if(eventData.pointerEnter && eventData.pointerEnter.GetComponent<BaseTile>())
-        {
-            tempTile = eventData.pointerEnter.GetComponent<BaseTile>();
         }
     }
 
@@ -63,86 +55,134 @@ public class Pirate : SelectableObject, IDragHandler, IBeginDragHandler, IEndDra
     {
         Collider.enabled = false;
         StartPosition = this.transform.position;
-
-        if (IsMoveWithItem())
-        {
-            SelfCoin = CurrentTile.Coins[0];
-        }
     }
 
     public void OnEndDrag(PointerEventData eventData)
     {
         Collider.enabled = true;
 
-        if (eventData.pointerEnter)
-        {
-            if (TryMoveOnTile(tempTile))
-            {
-                if (TryAttack(tempTile))
-                {
-                    if (IsMoveWithItem())
-                        ReplaceCoin(SelfCoin);
+        this.SetMovableOptions(eventData);
 
-                    CurrentTile.LeavePirate(this);
-                    tempTile.EnterPirate(this);
-                }
-            }
-            else
-            {
-                this.transform.position = StartPosition;
-            }
+        this.TryMoveOnTile();
+    }
+
+    #region MovableOptions
+
+    private void SetMovableOptions(PointerEventData eventData)
+    {
+        if (eventData.pointerEnter && eventData.pointerEnter.GetComponent<BaseTile>())
+        {
+            TargetTile = eventData.pointerEnter.GetComponent<BaseTile>();
+
+            isCanMove = true;
+            this.CanPlaceOnTile(TargetTile);
         }
         else
         {
-            this.transform.position = StartPosition;
+            TargetTile = null;
+            isCanMove = false;
+            isPlacebleTile = false;
+        }
+    }
+
+    private void CanPlaceOnTile(BaseTile targetTile)
+    {
+        isPlacebleTile = (CurrentTile != targetTile &&
+            (Math.Abs(TargetTile.HorizontalIndex - CurrentTile.HorizontalIndex) < 2) &&
+            (Math.Abs(TargetTile.VerticalIndex - CurrentTile.VerticalIndex) < 2) &&
+            !(targetTile is WaterTile) &&
+            (TargetTile.Pirates.Count < TargetTile.maxSize));
+
+        if (isPlacebleTile)
+        {
+            SetAttackMode(targetTile);
+        }
+        else
+        {
+            isAttack = false;
+        }
+    }
+
+    private void SetAttackMode(BaseTile targetTile)
+    {
+        isAttack = targetTile.Pirates.Count > 0 ? IsFriendlyPirates() : false;
+
+        bool IsFriendlyPirates()
+        {
+            var pirate = targetTile.Pirates[0];
+
+            if (pirate.ship != this.ship)
+                return true;
+            else
+                return false;
         }
 
-        SelfCoin = null;
+        if (isAttack)
+        {
+            isMoveWithCoin = false;
+        }
+        else
+        {
+            SetCoinWithMoveMode();
+        }
     }
 
-    private void ReplaceCoin(Coin coin)
+    private void SetCoinWithMoveMode()
     {
-        CurrentTile.Coins.Remove(coin);
-        tempTile.AddCoin(coin);
-        coin.transform.position = tempTile.transform.position;
+        isMoveWithCoin = CurrentTile.isHaveCoins && SelfPlayer.isMoveWithItem;
+    }
+    #endregion
+
+    #region MovableActions
+
+    private void TryMoveOnTile()
+    {
+        if (isCanMove && isPlacebleTile)
+        {
+            if (isAttack)
+            {
+                TryAttack();
+            }
+            else
+            {
+                if (isMoveWithCoin)
+                    TakeCoinFromTile();
+            }
+
+            CurrentTile.LeavePirate(this);
+            TargetTile.EnterPirate(this);
+        }
+        else
+        {
+            transform.position = this.StartPosition;
+        }
     }
 
-    private bool TryMoveOnTile(BaseTile tile)
+    private void TryAttack()
     {
-        return (CurrentTile != tile &&
-            (Math.Abs(tempTile.HorizontalIndex - CurrentTile.HorizontalIndex) < 2) && 
-            (Math.Abs(tempTile.VerticalIndex - CurrentTile.VerticalIndex) < 2) && 
-            !(tile is WaterTile) &&
-            (tempTile.Pirates.Count < tempTile.maxSize));
-    }
-
-    public bool TryAttack(BaseTile tile)
-    {
-        if(tile is ShipTile)
+        if (TargetTile is ShipTile && this.ship != TargetTile)
         {
             CurrentTile.LeavePirate(this);
             Die();
-            return false;
         }
-        else if (tile.Pirates.Count != 0)
+        else
         {
-            var pirate = tile.Pirates[0];
-
-            if(pirate.ship != this.ship)
-            {
-                this.Attack(tile);
-            }
+            this.Attack(TargetTile);
         }
-        return true;
     }
 
     private void Attack(BaseTile tile)
     {
-        foreach(Pirate pirate in tile.Pirates)
+        foreach (Pirate pirate in tile.Pirates)
         {
             pirate.Die();
         }
         tile.LeaveAllPirates();
+    }
+
+    private void TakeCoinFromTile()
+    {
+        this.SelfCoin = CurrentTile.PopCoin();
     }
 
     public void Die()
@@ -150,8 +190,5 @@ public class Pirate : SelectableObject, IDragHandler, IBeginDragHandler, IEndDra
         this.ship.EnterPirate(this);
     }
 
-    public bool IsMoveWithItem()
-    {
-        return CurrentTile.isHaveCoins && SelfPlayer.isMoveWithItem;
-    }
+    #endregion
 }
