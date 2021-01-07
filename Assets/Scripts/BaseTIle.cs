@@ -24,6 +24,8 @@ public class BaseTile : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 
     public bool isHaveCoins => Coins.Count > 0;
 
+    public bool isHavePirates => Pirates.Count > 0;
+
     public void SetTransformPosition(Vector3 position)
     {
         this.transform.position = position;
@@ -41,11 +43,29 @@ public class BaseTile : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
         this.transform.position = fixedPosition;
     }
 
+    #region PirateActions
+
     public virtual void EnterPirate(Pirate pirate)
     {
-        this.Pirates.Add(pirate);
-        SetCurrentPirateTile(pirate);
-        PlacePirateOnTile();
+        bool isCanMoveYet;
+
+        if (pirate.isAttack)
+        {
+            isCanMoveYet = this.TryAttack(pirate);
+        }
+        else
+        {
+            if (pirate.isMoveWithCoin)
+                pirate.TakeCoinFromTile();
+            isCanMoveYet = true;
+        }
+
+        if(isCanMoveYet)
+        {
+            this.Pirates.Add(pirate);
+            SetCurrentPirateTile(pirate);
+            PlacePirateOnTile();
+        }
     }
 
     public void LeaveAllPirates()
@@ -95,6 +115,28 @@ public class BaseTile : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 
         pirate.SelfCoin = null;
     }
+
+    public Pirate GetPirate()
+    {
+        return this.isHavePirates ? Pirates[0] : null;
+    }
+
+    public virtual bool TryAttack(Pirate pirate)
+    {
+        this.Attack(pirate);
+        return true;
+    }
+
+    public virtual void Attack(Pirate pirate)
+    {
+        foreach (Pirate target in Pirates)
+        {
+            target.Die();
+        }
+
+        this.LeaveAllPirates();
+    }
+    #endregion
 
     public virtual void AddCoin(Coin coin)
     {

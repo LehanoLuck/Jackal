@@ -21,13 +21,13 @@ public class Pirate : SelectableObject, IDragHandler, IBeginDragHandler, IEndDra
     public BaseTile CurrentTile { get; set; }
     private BaseTile TargetTile { get; set; }
 
-    public ShipTile ship;
+    public ShipTile Ship;
 
     public Player SelfPlayer;
 
     private bool isCanMove;
     private bool isPlacebleTile;
-    private bool isAttack;
+    public bool isAttack;
     public bool isMoveWithCoin;
 
     void Start()
@@ -35,6 +35,8 @@ public class Pirate : SelectableObject, IDragHandler, IBeginDragHandler, IEndDra
         GameCamera = Camera.main;
         Collider = GetComponent<MeshCollider>();
     }
+
+    #region DragEvents
 
     public void OnDrag(PointerEventData eventData)
     {
@@ -66,22 +68,41 @@ public class Pirate : SelectableObject, IDragHandler, IBeginDragHandler, IEndDra
         this.TryMoveOnTile();
     }
 
+    #endregion
+
     #region MovableOptions
 
     private void SetMovableOptions(PointerEventData eventData)
     {
-        if (eventData.pointerEnter && eventData.pointerEnter.GetComponent<BaseTile>())
-        {
-            TargetTile = eventData.pointerEnter.GetComponent<BaseTile>();
+        TargetTile = GetTargetTile();
 
-            isCanMove = true;
+        if (TargetTile)
+        {
             this.CanPlaceOnTile(TargetTile);
         }
         else
         {
-            TargetTile = null;
             isCanMove = false;
             isPlacebleTile = false;
+        }
+
+        BaseTile GetTargetTile()
+        {
+            var point = eventData.pointerEnter;
+            if (point)
+            {
+                if (point.GetComponent<BaseTile>())
+                {
+                    isCanMove = true;
+                    return eventData.pointerEnter.GetComponent<BaseTile>();
+                }
+                else if (point.GetComponent<Pirate>())
+                {
+                    isCanMove = true;
+                    return eventData.pointerEnter.GetComponent<Pirate>().CurrentTile;
+                }
+            }
+            return null;
         }
     }
 
@@ -105,13 +126,13 @@ public class Pirate : SelectableObject, IDragHandler, IBeginDragHandler, IEndDra
 
     private void SetAttackMode(BaseTile targetTile)
     {
-        isAttack = targetTile.Pirates.Count > 0 ? IsFriendlyPirates() : false;
+        isAttack = targetTile.isHavePirates ? IsFriendlyPirates() : false;
 
         bool IsFriendlyPirates()
         {
-            var pirate = targetTile.Pirates[0];
+            var pirate = targetTile.GetPirate();
 
-            if (pirate.ship != this.ship)
+            if (pirate.Ship != this.Ship)
                 return true;
             else
                 return false;
@@ -139,16 +160,6 @@ public class Pirate : SelectableObject, IDragHandler, IBeginDragHandler, IEndDra
     {
         if (isCanMove && isPlacebleTile)
         {
-            if (isAttack)
-            {
-                TryAttack();
-            }
-            else
-            {
-                if (isMoveWithCoin)
-                    TakeCoinFromTile();
-            }
-
             CurrentTile.LeavePirate(this);
             TargetTile.EnterPirate(this);
         }
@@ -158,36 +169,17 @@ public class Pirate : SelectableObject, IDragHandler, IBeginDragHandler, IEndDra
         }
     }
 
-    private void TryAttack()
-    {
-        if (TargetTile is ShipTile && this.ship != TargetTile)
-        {
-            CurrentTile.LeavePirate(this);
-            Die();
-        }
-        else
-        {
-            this.Attack(TargetTile);
-        }
-    }
-
-    private void Attack(BaseTile tile)
-    {
-        foreach (Pirate pirate in tile.Pirates)
-        {
-            pirate.Die();
-        }
-        tile.LeaveAllPirates();
-    }
-
-    private void TakeCoinFromTile()
+    public void TakeCoinFromTile()
     {
         this.SelfCoin = CurrentTile.PopCoin();
     }
 
     public void Die()
     {
-        this.ship.EnterPirate(this);
+        //Заглушка чтобы не уносить с собой при смерти монетки
+        this.isMoveWithCoin = false;
+        this.isAttack = false;
+        this.Ship.EnterPirate(this);
     }
 
     #endregion

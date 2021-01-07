@@ -135,7 +135,7 @@ public class ShipTile : BaseTile, IDragHandler, IBeginDragHandler, IEndDragHandl
         {
             Pirate pirate = Instantiate(PirateTemplate, this.transform.parent);
             this.EnterPirate(pirate);
-            pirate.ship = this;
+            pirate.Ship = this;
             pirate.SelfPlayer = this.SelfPlayer;
         }
     }
@@ -143,6 +143,12 @@ public class ShipTile : BaseTile, IDragHandler, IBeginDragHandler, IEndDragHandl
     public override void EnterPirate(Pirate pirate)
     {
         base.EnterPirate(pirate);
+    }
+
+    public override bool TryAttack(Pirate pirate)
+    {
+        pirate.Die();
+        return false;
     }
 
     public override void AddCoin(Coin coin)
