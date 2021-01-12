@@ -8,6 +8,8 @@ public class ShipTile : BaseTile, IDragHandler, IBeginDragHandler, IEndDragHandl
 {
     private Camera GameCamera;
 
+    private PhotonView photonView;
+
     public Player SelfPlayer;
     public Pirate PirateTemplate;
     private BaseTile tempTile;
@@ -18,10 +20,15 @@ public class ShipTile : BaseTile, IDragHandler, IBeginDragHandler, IEndDragHandl
     {
         GameCamera = Camera.main;
         Collider = GetComponent<BoxCollider>();
+
+        photonView = GetComponent<PhotonView>();
     }
 
     public void OnBeginDrag(PointerEventData eventData)
     {
+        if (!photonView.isMine)
+            return;
+
         Collider.enabled = false;
 
         //Отключаем колайдеры чтобы рейкаст не попадал на модельки, из-за чего ломается перемещение
@@ -33,6 +40,9 @@ public class ShipTile : BaseTile, IDragHandler, IBeginDragHandler, IEndDragHandl
 
     public void OnDrag(PointerEventData eventData)
     {
+        if (!photonView.isMine)
+            return;
+
         var groundPlane = new Plane(Vector3.up, Vector3.zero);
 
         Ray ray = GameCamera.ScreenPointToRay(Input.mousePosition);
@@ -57,6 +67,9 @@ public class ShipTile : BaseTile, IDragHandler, IBeginDragHandler, IEndDragHandl
 
     public void OnEndDrag(PointerEventData eventData)
     {
+        if (!photonView.isMine)
+            return;
+
         Collider.enabled = true;
         if (eventData.pointerEnter && eventData.pointerEnter.GetComponent<WaterTile>())
         {

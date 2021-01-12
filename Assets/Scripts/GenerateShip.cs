@@ -15,7 +15,8 @@ public class GenerateShip : MonoBehaviour
             Destroy(placingShip.gameObject);
         }
 
-        placingShip = Instantiate(tile);
+        var netTile = PhotonNetwork.Instantiate(tile.name, Input.mousePosition, Quaternion.identity, 0);
+        placingShip = netTile.GetComponent<ShipTile>();
     }
 
     private void Start()
