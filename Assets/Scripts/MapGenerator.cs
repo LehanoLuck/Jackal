@@ -19,9 +19,10 @@ public class MapGenerator : MonoBehaviour
     private int groundTilesCount;
 
     public BaseTile[][] Map;
+    public List<ShipTile> ships = new List<ShipTile>();
 
     private List<GroundTile> TilesList = new List<GroundTile>();
-    // Start is called before the first frame update
+
     void Start()
     {
         groundTilesCount = (Width - waterWidth * 2) * (Length - waterLength * 2);
@@ -90,30 +91,4 @@ public class MapGenerator : MonoBehaviour
         WaterTile tile = Instantiate(WaterTileTemplate, this.transform);
         PlaceTile(tile, i, j);
     }
-
-    //public void CreateShipTile(int i, int j)
-    //{
-    //    ShipTile tile = Instantiate(ShipTileTemplate, this.transform);
-    //    PlaceTile(tile, i, j);
-
-    //    for(int k = 0; k < shipCount; k++)
-    //    {
-    //        AddPirateOnTile(i, j);
-    //    }
-    //}
-
-    //private void AddPirateOnTile(int i, int j)
-    //{
-    //    Pirate pirate = Instantiate(PirateTemplate, this.transform);
-
-    //    Map[i][j].EnterPirate(pirate);
-    //}
-
-    //private void AddPirateOnMap()
-    //{
-    //    int i = Random.Range(waterWidth, Width - waterWidth);
-    //    int j = Random.Range(waterLength, Length - waterLength);
-
-    //    this.AddPirateOnTile(i, j);
-    //}
 }

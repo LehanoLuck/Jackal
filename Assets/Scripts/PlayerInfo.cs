@@ -1,54 +1,55 @@
-﻿using System.Collections;
+﻿using ExitGames.Client.Photon;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using ExitGames.Client.Photon;
 
-public class LobbyManager : MonoBehaviour, IPunCallbacks
+public class PlayerInfo : MonoBehaviour, IPunObservable,IPunCallbacks
 {
-    public InputField LobbyName;
+    public PhotonView photonView;
 
-    public GameObject LobbyModal;
+    public Toggle toggleReady;
 
-    public Text LogText;
+    public Text PlayerName;
+
+    public bool isReady;
+
     // Start is called before the first frame update
     void Start()
     {
-        PhotonNetwork.playerName = "Player " + Random.Range(1000, 9999);
-
-        Log("Player's name is set to " + PhotonNetwork.playerName);
-        PhotonNetwork.ConnectUsingSettings("1.0.");
     }
 
-    private void Log(string message)
+    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
     {
-        Debug.Log(message);
-        LogText.text += "\n";
-        LogText.text += message;
+        if(stream.isWriting)
+        {
+            stream.SendNext(isReady);
+        }
+        else
+        {
+            isReady = (bool)stream.ReceiveNext();
+            this.toggleReady.SetIsOnWithoutNotify(isReady);
+        }
     }
 
-    public void ShowCreateLobbyModalDialog()
+    public void SwitchIsReady()
     {
-        LobbyModal.SetActive(true);
+        if(photonView.isMine)
+        {
+            isReady = !isReady;
+        }
     }
 
-    public void JoinRoom()
+    public void OnPhotonInstantiate(PhotonMessageInfo info)
     {
-        JoinRoomByName(LobbyName.text);
-        LobbyModal.SetActive(false);
-    }
-
-    public void JoinRoomByName(string roomName)
-    {
-        RoomOptions roomOptions = new RoomOptions();
-        roomOptions.IsVisible = false;
-        roomOptions.MaxPlayers = 3;
-        PhotonNetwork.JoinOrCreateRoom(roomName, roomOptions, null);
+        var parent = FindObjectOfType<PlayersInLobby>().transform;
+        this.transform.SetParent(parent);
+        this.PlayerName.text = photonView.owner.NickName;
     }
 
     public void OnConnectedToPhoton()
     {
-        Log("Connected to Photon!");
+        throw new System.NotImplementedException();
     }
 
     public void OnLeftRoom()
@@ -73,7 +74,7 @@ public class LobbyManager : MonoBehaviour, IPunCallbacks
 
     public void OnCreatedRoom()
     {
-        Log($"Lobby with name {LobbyName.text} has been created");
+        throw new System.NotImplementedException();
     }
 
     public void OnJoinedLobby()
@@ -101,11 +102,6 @@ public class LobbyManager : MonoBehaviour, IPunCallbacks
         throw new System.NotImplementedException();
     }
 
-    public void OnPhotonInstantiate(PhotonMessageInfo info)
-    {
-        throw new System.NotImplementedException();
-    }
-
     public void OnReceivedRoomListUpdate()
     {
         throw new System.NotImplementedException();
@@ -113,8 +109,7 @@ public class LobbyManager : MonoBehaviour, IPunCallbacks
 
     public void OnJoinedRoom()
     {
-        Log($"Joined in lobby with name {LobbyName.text}");
-        PhotonNetwork.LoadLevel("LobbyScene");
+        throw new System.NotImplementedException();
     }
 
     public void OnPhotonPlayerConnected(PhotonPlayer newPlayer)
@@ -129,12 +124,12 @@ public class LobbyManager : MonoBehaviour, IPunCallbacks
 
     public void OnPhotonRandomJoinFailed(object[] codeAndMsg)
     {
-        Log("Failed to Join Room");
+        throw new System.NotImplementedException();
     }
 
     public void OnConnectedToMaster()
     {
-        Log("Connected to Master!");
+        throw new System.NotImplementedException();
     }
 
     public void OnPhotonMaxCccuReached()
