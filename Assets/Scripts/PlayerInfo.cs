@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using Hashtable = ExitGames.Client.Photon.Hashtable;
 
 public class PlayerInfo : MonoBehaviour, IPunObservable,IPunCallbacks
 {
@@ -14,9 +15,18 @@ public class PlayerInfo : MonoBehaviour, IPunObservable,IPunCallbacks
 
     public bool isReady;
 
+    private Hashtable customProperties;
+
     // Start is called before the first frame update
     void Start()
     {
+        customProperties = new Hashtable();
+        customProperties.Add("IsReady", isReady);
+        PhotonNetwork.SetPlayerCustomProperties(customProperties);
+        if (!photonView.isMine)
+        {
+            toggleReady.enabled = false;
+        }
     }
 
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
@@ -30,6 +40,7 @@ public class PlayerInfo : MonoBehaviour, IPunObservable,IPunCallbacks
             isReady = (bool)stream.ReceiveNext();
             this.toggleReady.SetIsOnWithoutNotify(isReady);
         }
+        PhotonNetwork.player.CustomProperties["IsReady"] = isReady;
     }
 
     public void SwitchIsReady()
@@ -44,6 +55,7 @@ public class PlayerInfo : MonoBehaviour, IPunObservable,IPunCallbacks
     {
         var parent = FindObjectOfType<PlayersInLobby>().transform;
         this.transform.SetParent(parent);
+        this.transform.localScale = new Vector3(1, 1, 1);
         this.PlayerName.text = photonView.owner.NickName;
     }
 
