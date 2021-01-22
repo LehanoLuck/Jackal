@@ -1,11 +1,15 @@
+using ExitGames.Client.Photon;
+using Photon.Pun;
+using Photon.Realtime;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using ExitGames.Client.Photon;
 
-public class PlayersInLobby : MonoBehaviour
+public class PlayersInLobby : MonoBehaviour, IOnEventCallback
 {
+    private const byte StartGameEvent = 1;
+
     public GameObject playerInfo;
     public GameObject startGameButton;
 
@@ -14,7 +18,7 @@ public class PlayersInLobby : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        if (PhotonNetwork.isMasterClient)
+        if (PhotonNetwork.IsMasterClient)
             startGameButton.SetActive(true);
 
         AddPlayerInLobby();
@@ -28,15 +32,38 @@ public class PlayersInLobby : MonoBehaviour
     [System.Obsolete]
     public void StartGame()
     {
-        if (PhotonNetwork.playerList.Length < 2)
+        if (PhotonNetwork.PlayerList.Length < 2)
             return;
 
-        var readyPlayers = PhotonNetwork.playerList.Where(p => (bool)p.customProperties["IsReady"]);
+        var readyPlayers = PhotonNetwork.PlayerList.Where(p => (bool)p.CustomProperties["IsReady"]);
         var count = readyPlayers.Count();
-        var photonCount = PhotonNetwork.playerList.Count();
-        if (count == PhotonNetwork.countOfPlayers)
+
+        if (count == PhotonNetwork.CountOfPlayers)
         {
-            PhotonNetwork.LoadLevel("SampleScene");
+            RaiseEventOptions raiseEventOptions = new RaiseEventOptions { Receivers = ReceiverGroup.All };
+            SendOptions sendOptions = new SendOptions { Reliability = true };
+
+            var raiseCode = PhotonNetwork.RaiseEvent(StartGameEvent, true, raiseEventOptions, sendOptions);
         }
+    }
+
+    public void OnEvent(EventData photonEvent)
+    {
+        switch(photonEvent.Code)
+        {
+            case StartGameEvent:
+                PhotonNetwork.LoadLevel("SampleScene");
+                break;
+        }    
+    }
+
+    private void OnEnable()
+    {
+        PhotonNetwork.AddCallbackTarget(this);
+    }
+
+    private void OnDisable()
+    {
+        PhotonNetwork.RemoveCallbackTarget(this);
     }
 }

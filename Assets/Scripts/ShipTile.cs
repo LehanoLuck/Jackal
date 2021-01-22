@@ -1,4 +1,5 @@
 ﻿using Assets.Scripts;
+using Photon.Pun;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -26,7 +27,7 @@ public class ShipTile : BaseTile, IDragHandler, IBeginDragHandler, IEndDragHandl
 
     public void OnBeginDrag(PointerEventData eventData)
     {
-        if (!photonView.isMine)
+        if (!photonView.IsMine)
             return;
 
         Collider.enabled = false;
@@ -40,7 +41,7 @@ public class ShipTile : BaseTile, IDragHandler, IBeginDragHandler, IEndDragHandl
 
     public void OnDrag(PointerEventData eventData)
     {
-        if (!photonView.isMine)
+        if (!photonView.IsMine)
             return;
 
         var groundPlane = new Plane(Vector3.up, Vector3.zero);
@@ -67,7 +68,7 @@ public class ShipTile : BaseTile, IDragHandler, IBeginDragHandler, IEndDragHandl
 
     public void OnEndDrag(PointerEventData eventData)
     {
-        if (!photonView.isMine)
+        if (!photonView.IsMine)
             return;
 
         Collider.enabled = true;
