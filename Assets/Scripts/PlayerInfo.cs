@@ -48,6 +48,8 @@ public class PlayerInfo : MonoBehaviour, IPunObservable, IPunInstantiateMagicCal
         if(photonView.IsMine)
         {
             isReady = !isReady;
+            this.customProperties["IsReady"] = isReady;
+            PhotonNetwork.SetPlayerCustomProperties(customProperties);
         }
     }
 
