@@ -239,7 +239,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.25432277, y: 0.044325452}
   m_AnchorMax: {x: 0.7451182, y: 0.1416627}
-  m_AnchoredPosition: {x: -86.04001, y: 137.5}
+  m_AnchoredPosition: {x: -86.04002, y: 137.5}
   m_SizeDelta: {x: 178.02005, y: 304.1}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &44499102
@@ -373,6 +373,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 650149abb06c3db4a8bf5f9a74c35778, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ShipTileTemplate: {fileID: 4190543239590579343, guid: 3363998fc00907a43af76f4e1a920de2, type: 3}
+  mapManager: {fileID: 1243165923}
 --- !u!114 &94337221
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -473,12 +475,12 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 94337220}
-        m_TargetAssemblyTypeName: GenerateShip, Assembly-CSharp
+        m_TargetAssemblyTypeName: ShipManager, Assembly-CSharp
         m_MethodName: StartPlacingShip
-        m_Mode: 2
+        m_Mode: 1
         m_Arguments:
-          m_ObjectArgument: {fileID: 4190543239590579343, guid: 3363998fc00907a43af76f4e1a920de2, type: 3}
-          m_ObjectArgumentAssemblyTypeName: ShipTile, Assembly-CSharp
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
@@ -1168,13 +1170,8 @@ MonoBehaviour:
   ClosedTileTemplate: {fileID: 8374229652451591, guid: 475c9ac0e1c43b54bafd1a899a8b9117, type: 3}
   GroundTileTemplate: {fileID: 1546859273666413450, guid: 155e3d275f9a81a4b94d0e4b6876c7f7, type: 3}
   WaterTileTemplate: {fileID: 5138706614829363376, guid: fa0ca7fb13872ce4f9042983ffaea756, type: 3}
-  ShipTileTemplate: {fileID: 4190543239590579343, guid: 3363998fc00907a43af76f4e1a920de2, type: 3}
   CoinTileTemplate: {fileID: 7527705423105074625, guid: 5556e98330d4814468e19e7c24c20232, type: 3}
-  Width: 10
-  Length: 10
-  waterWidth: 0
-  waterLength: 4
-  coinsCount: 5
+  ShipTileTemplate: {fileID: 4190543239590579343, guid: 3363998fc00907a43af76f4e1a920de2, type: 3}
   ships: []
 --- !u!4 &1243165924
 Transform:

@@ -1,4 +1,5 @@
 ﻿using Assets.Scripts;
+using Photon.Pun;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -7,8 +8,10 @@ using UnityEngine.EventSystems;
 using UnityEngine.UIElements;
 
 
-public class Pirate : SelectableObject, IDragHandler, IBeginDragHandler, IEndDragHandler
+public class Pirate : SelectableObject, IDragHandler, IBeginDragHandler, IEndDragHandler, IPunInstantiateMagicCallback
 {
+    public byte Id { get; set; }
+
     public GameObject MoveCoinsButtonTemplate;
 
     private Camera GameCamera;
@@ -21,25 +24,35 @@ public class Pirate : SelectableObject, IDragHandler, IBeginDragHandler, IEndDra
     public BaseTile CurrentTile { get; set; }
     private BaseTile TargetTile { get; set; }
 
+    private PhotonView photonView;
+
     public ShipTile Ship;
 
     public Player SelfPlayer;
 
-    private bool isCanMove;
-    private bool isPlacebleTile;
-    public bool isAttack;
-    public bool isMoveWithCoin;
+    public MovementSettings MovementSettings = new MovementSettings();
 
     void Start()
     {
         GameCamera = Camera.main;
         Collider = GetComponent<MeshCollider>();
+
+        photonView = GetComponent<PhotonView>();
+    }
+
+    public void SetShip(ShipTile ship)
+    {
+        this.Ship = ship;
+        ship.ShipPirates.Add(this);
     }
 
     #region DragEvents
 
     public void OnDrag(PointerEventData eventData)
     {
+        if (!photonView.IsMine)
+            return;
+
         var groundPlane = new Plane(Vector3.up, Vector3.zero);
 
         Ray ray = GameCamera.ScreenPointToRay(Input.mousePosition);
@@ -55,35 +68,59 @@ public class Pirate : SelectableObject, IDragHandler, IBeginDragHandler, IEndDra
 
     public void OnBeginDrag(PointerEventData eventData)
     {
+        if (!photonView.IsMine)
+            return;
+
         Collider.enabled = false;
         StartPosition = this.transform.position;
     }
 
     public void OnEndDrag(PointerEventData eventData)
     {
+        if (!photonView.IsMine)
+            return;
+
         Collider.enabled = true;
 
-        this.SetMovableOptions(eventData);
+        var isCanMove = IsCanMoveOnTile(eventData);
 
-        this.TryMoveOnTile();
+        if (isCanMove)
+        {
+             MovementSettings = this.SetMovableOptions(TargetTile);
+
+            var pirateMovementData = new PirateMovementData
+            {
+                Id = this.Id,
+                ShipId = this.Ship.Id,
+                XPos = TargetTile.HorizontalIndex,
+                YPos = TargetTile.VerticalIndex,
+                Settings = MovementSettings
+            };
+
+            MoveOnTile();
+            RaiseEventManager.RaiseMovePirateEvent(pirateMovementData);
+        }
+        else
+        {
+            transform.position = this.StartPosition;
+        }
     }
 
     #endregion
 
     #region MovableOptions
 
-    private void SetMovableOptions(PointerEventData eventData)
+    private bool IsCanMoveOnTile(PointerEventData eventData)
     {
         TargetTile = GetTargetTile();
 
-        if (TargetTile)
+        if(TargetTile)
         {
-            this.CanPlaceOnTile(TargetTile);
+            return IsCanMoveOnTile();
         }
         else
         {
-            isCanMove = false;
-            isPlacebleTile = false;
+            return false;
         }
 
         BaseTile GetTargetTile()
@@ -93,40 +130,36 @@ public class Pirate : SelectableObject, IDragHandler, IBeginDragHandler, IEndDra
             {
                 if (point.GetComponent<BaseTile>())
                 {
-                    isCanMove = true;
                     return eventData.pointerEnter.GetComponent<BaseTile>();
                 }
                 else if (point.GetComponent<Pirate>())
                 {
-                    isCanMove = true;
                     return eventData.pointerEnter.GetComponent<Pirate>().CurrentTile;
                 }
             }
             return null;
         }
-    }
 
-    private void CanPlaceOnTile(BaseTile targetTile)
-    {
-        isPlacebleTile = (CurrentTile != targetTile &&
+        bool IsCanMoveOnTile()
+        {
+            return (CurrentTile != TargetTile &&
             (Math.Abs(TargetTile.HorizontalIndex - CurrentTile.HorizontalIndex) < 2) &&
             (Math.Abs(TargetTile.VerticalIndex - CurrentTile.VerticalIndex) < 2) &&
-            !(targetTile is WaterTile) &&
+            !(TargetTile is WaterTile) &&
             (TargetTile.Pirates.Count < TargetTile.maxSize));
-
-        if (isPlacebleTile)
-        {
-            SetAttackMode(targetTile);
-        }
-        else
-        {
-            isAttack = false;
         }
     }
 
-    private void SetAttackMode(BaseTile targetTile)
+    private MovementSettings SetMovableOptions(BaseTile targetTile)
     {
-        isAttack = targetTile.isHavePirates ? IsFriendlyPirates() : false;
+        bool isAttack = SetAttackMode(targetTile);
+        bool isMoveWithCoin = SetCoinWithMoveMode(isAttack);
+        return new MovementSettings(isAttack,isMoveWithCoin);
+    }
+
+    private bool  SetAttackMode(BaseTile targetTile)
+    {
+        return targetTile.isHavePirates ? IsFriendlyPirates() : false;
 
         bool IsFriendlyPirates()
         {
@@ -137,36 +170,28 @@ public class Pirate : SelectableObject, IDragHandler, IBeginDragHandler, IEndDra
             else
                 return false;
         }
-
-        if (isAttack)
-        {
-            isMoveWithCoin = false;
-        }
-        else
-        {
-            SetCoinWithMoveMode();
-        }
     }
 
-    private void SetCoinWithMoveMode()
+    private bool SetCoinWithMoveMode(bool isAttack)
     {
-        isMoveWithCoin = CurrentTile.isHaveCoins && SelfPlayer.isMoveWithItem;
+        return CurrentTile.isHaveCoins && SelfPlayer.isMoveWithItem && !isAttack;
     }
     #endregion
 
     #region MovableActions
 
-    private void TryMoveOnTile()
+    public void MoveOnTile(PirateMovementData data, BaseTile targetTile)
     {
-        if (isCanMove && isPlacebleTile)
-        {
-            CurrentTile.LeavePirate(this);
-            TargetTile.EnterPirate(this);
-        }
-        else
-        {
-            transform.position = this.StartPosition;
-        }
+        this.MovementSettings = data.Settings;
+        TargetTile = targetTile;
+
+        MoveOnTile();
+    }
+
+    public void MoveOnTile()
+    {
+        CurrentTile.LeavePirate(this);
+        TargetTile.EnterPirate(this);
     }
 
     public void TakeCoinFromTile()
@@ -177,10 +202,58 @@ public class Pirate : SelectableObject, IDragHandler, IBeginDragHandler, IEndDra
     public void Die()
     {
         //Заглушка чтобы не уносить с собой при смерти монетки
-        this.isMoveWithCoin = false;
-        this.isAttack = false;
+        this.MovementSettings.IsMoveWithCoin = false;
+        this.MovementSettings.IsAttack = false;
         this.Ship.EnterPirate(this);
     }
 
     #endregion
+
+    public void OnPhotonInstantiate(PhotonMessageInfo info)
+    {
+        var data = info.photonView.InstantiationData;
+        this.Id = (byte)data[0];
+        var mapManager = FindObjectOfType<MapManager>();
+        var ship = mapManager.ShipTiles[(byte)data[1]];
+        SetShip(ship);
+        ship.EnterPirate(this);
+    }
+}
+
+public class MovementSettings
+{
+    public MovementSettings(bool isAttack, bool isMovewithCoin)
+    {
+        this.IsAttack = isAttack;
+        this.IsMoveWithCoin = isMovewithCoin;
+    }
+
+    public MovementSettings()
+    {
+        IsAttack = false;
+        IsMoveWithCoin = false;
+    }
+
+    public bool IsAttack { get; set; }
+    public bool IsMoveWithCoin { get; set; }
+
+    public static object Deserialize(byte[] data)
+    {
+        var result = new MovementSettings();
+
+        result.IsAttack = Convert.ToBoolean(data[0]);
+        result.IsMoveWithCoin = Convert.ToBoolean(data[1]);
+        return result;
+    }
+
+    public static byte[] Serialize(object data)
+    {
+        var settings = (MovementSettings)data;
+        return
+            new byte[]
+            {
+                Convert.ToByte(settings.IsAttack),
+                Convert.ToByte(settings.IsMoveWithCoin),
+            };
+    }
 }

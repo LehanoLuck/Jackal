@@ -62,10 +62,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxSize: 5
-  SelfPlayer: {fileID: 0}
   PirateTemplate: {fileID: 5127521087970736391, guid: 186359f6c0e5a3f43955f128267926f9, type: 3}
+  SelfPlayer: {fileID: 0}
   Collider: {fileID: 0}
   isInFreeSpace: 0
+  ShipPirates: []
 --- !u!222 &2607582561150030252
 CanvasRenderer:
   m_ObjectHideFlags: 0

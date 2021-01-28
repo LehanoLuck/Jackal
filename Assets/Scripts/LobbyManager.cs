@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using Photon.Pun;
 using Photon.Realtime;
+using Assets.Scripts;
 
 public class LobbyManager : MonoBehaviourPunCallbacks
 {
@@ -19,6 +20,8 @@ public class LobbyManager : MonoBehaviourPunCallbacks
 
         Log("Player's name is set to " + PhotonNetwork.LocalPlayer.NickName);
         PhotonNetwork.ConnectUsingSettings();
+
+        RaiseEventManager.ActivateCallbacks();
         //PhotonNetwork.ConnectToRegion("ru");
     }
 

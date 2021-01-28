@@ -5,17 +5,21 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class ShipTile : BaseTile, IDragHandler, IBeginDragHandler, IEndDragHandler
+public class ShipTile : BaseTile, IDragHandler, IBeginDragHandler, IEndDragHandler, IPunInstantiateMagicCallback
 {
     private Camera GameCamera;
 
     private PhotonView photonView;
 
-    public Player SelfPlayer;
+    public byte Id { get; set; }
     public Pirate PirateTemplate;
+
+    public Player SelfPlayer;
     private BaseTile tempTile;
     public BoxCollider Collider;
     public bool isInFreeSpace = false;
+
+    public List<Pirate> ShipPirates = new List<Pirate>();
 
     void Start()
     {
@@ -78,7 +82,13 @@ public class ShipTile : BaseTile, IDragHandler, IBeginDragHandler, IEndDragHandl
             {
                 if (TryReplace(tempTile))
                 {
-                    Replace(tempTile);
+                    RaiseEventManager.RaiseReplaceShipEvent(
+                        new ShipMovementData
+                        {
+                            Id = Id,
+                            XPos = tempTile.HorizontalIndex,
+                            YPos = tempTile.VerticalIndex
+                        });
                 }
                 else
                 {
@@ -94,6 +104,7 @@ public class ShipTile : BaseTile, IDragHandler, IBeginDragHandler, IEndDragHandl
         {
             this.SetTransformPosition(this.fixedPosition);
         }
+        //Придумать как реализовать перенос пиратов для всех клиентов
         PlacePirateOnTile();
 
         foreach(Pirate pirate in Pirates)
@@ -108,10 +119,10 @@ public class ShipTile : BaseTile, IDragHandler, IBeginDragHandler, IEndDragHandl
             Mathf.Abs(VerticalIndex - tile.VerticalIndex) < 2);
     }
 
-    private void Replace(BaseTile tile)
+    public void Replace(BaseTile tile)
     {
-        int i = tile.HorizontalIndex;
-        int j = tile.VerticalIndex;
+        byte i = tile.HorizontalIndex;
+        byte j = tile.VerticalIndex;
 
         tile.HorizontalIndex = this.HorizontalIndex;
         tile.VerticalIndex = this.VerticalIndex;
@@ -140,16 +151,16 @@ public class ShipTile : BaseTile, IDragHandler, IBeginDragHandler, IEndDragHandl
 
         SelfPlayer = FindObjectOfType<Player>();
 
-        this.AddPirateOnTile(3);
+        if(photonView.IsMine)
+            this.AddPirateOnTile(3);
     }
 
     private void AddPirateOnTile(int count)
     {
         for(int i = 0; i < count; i++)
         {
-            Pirate pirate = Instantiate(PirateTemplate, this.transform.parent);
-            this.EnterPirate(pirate);
-            pirate.Ship = this;
+            byte pirateId = (byte)this.ShipPirates.Count;
+            Pirate pirate = PhotonNetwork.Instantiate(PirateTemplate.name, this.transform.position, Quaternion.identity, 0, new object[] { pirateId, this.Id }).GetComponent<Pirate>();
             pirate.SelfPlayer = this.SelfPlayer;
         }
     }
@@ -170,5 +181,14 @@ public class ShipTile : BaseTile, IDragHandler, IBeginDragHandler, IEndDragHandl
         Destroy(coin.gameObject);
         var value = ++this.SelfPlayer.PlayerUI.CoinsCount;
         this.SelfPlayer.PlayerUI.CoinsValue.text = value.ToString();
+    }
+
+    public void OnPhotonInstantiate(PhotonMessageInfo info)
+    {
+        var mapManger = FindObjectOfType<MapManager>();
+        var data = info.photonView.InstantiationData;
+        this.Id = (byte)data[0];
+
+        mapManger.ShipTiles.Add(Id, this);
     }
 }

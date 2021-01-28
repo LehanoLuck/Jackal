@@ -11,9 +11,8 @@ using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using UnityEngine;
 
-public class PlayersInLobby : MonoBehaviour, IOnEventCallback
+public class PlayersInLobby : MonoBehaviour
 {
-    private const byte StartGameEvent = 1;
 
     public GameObject playerInfo;
     public GameObject startGameButton;
@@ -45,24 +44,8 @@ public class PlayersInLobby : MonoBehaviour, IOnEventCallback
 
         if (count == PhotonNetwork.CountOfPlayers)
         {
-            RaiseEventOptions raiseEventOptions = new RaiseEventOptions { Receivers = ReceiverGroup.All };
-            SendOptions sendOptions = new SendOptions { Reliability = true };
-
-            int[][] mapMatrix = MapMatrixManager.CreateRandomGenerationMapMatrix(MapSettings.Default);
-
-            var raiseCode = PhotonNetwork.RaiseEvent(StartGameEvent, mapMatrix, raiseEventOptions, sendOptions);
+            RaiseEventManager.RaiseStartGameEvent();
         }
-    }
-
-    public void OnEvent(EventData photonEvent)
-    {
-        switch(photonEvent.Code)
-        {
-            case StartGameEvent:
-                MapMatrixManager.GenerationMapMatrix = (int[][])photonEvent.CustomData;
-                PhotonNetwork.LoadLevel("SampleScene");
-                break;
-        }    
     }
 
     private void OnEnable()

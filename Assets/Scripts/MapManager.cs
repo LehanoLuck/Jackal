@@ -3,14 +3,16 @@ using System.Collections.Generic;
 using Assets.Scripts;
 using UnityEngine;
 
-public class MapGenerator : MonoBehaviour
+public class MapManager : MonoBehaviour
 {
     public int[][] GenerationMapMatrix;
     public GroundTile ClosedTileTemplate;
     public GroundTile GroundTileTemplate;
     public WaterTile WaterTileTemplate;
-    public ShipTile ShipTileTemplate;
     public CoinTile CoinTileTemplate;
+    public ShipTile ShipTileTemplate;
+
+    public Dictionary<int, ShipTile> ShipTiles = new Dictionary<int, ShipTile>();
 
     public BaseTile[][] Map;
     private Hashtable TilesTable;
@@ -25,59 +27,24 @@ public class MapGenerator : MonoBehaviour
 
         GenerationMapMatrix = MapMatrixManager.GenerationMapMatrix;
         GenerateMap();
+
+        RaiseEventManager.EventMapManager = this;
     }
 
     public void GenerateMap()
     {
         this.Map = new BaseTile[GenerationMapMatrix.Length][];
-        for (int i = 0; i < GenerationMapMatrix.Length; i++)
+        for (byte i = 0; i < GenerationMapMatrix.Length; i++)
         {
             Map[i] = new BaseTile[GenerationMapMatrix[i].Length];
-            for (int j = 0; j < GenerationMapMatrix[i].Length; j++)
+            for (byte j = 0; j < GenerationMapMatrix[i].Length; j++)
             {
                 CreateTile(i, j);
             }
         }
     }
 
-    private void GenerateMatrix()
-    {
-        //Map = new BaseTile[Width][];
-
-        //if (coinsCount > groundTilesCount)
-        //    coinsCount = groundTilesCount;
-
-        //for (int i = 0; i < coinsCount; i++)
-        //{
-        //    TilesList.Add(CoinTileTemplate);
-        //}
-
-        //for (int i = 0; i < groundTilesCount - coinsCount; i++)
-        //{
-        //    TilesList.Add(GroundTileTemplate);
-        //}
-
-        //TilesList = TilesList.Shuffle();
-
-        //for (int i = 0; i < this.Width; i++)
-        //{
-        //    Map[i] = new BaseTile[Length];
-        //    for (int j = 0; j < this.Length; j++)
-        //    {
-        //        if (i < waterWidth || i >= Width - waterWidth || j < waterLength || j >= Length - waterLength)
-        //        {
-        //            CreateWaterTile(i, j);
-        //        }
-        //        else
-        //        {
-        //            CreateGroundTile(i, j, TilesList[0]);
-        //            TilesList.Remove(TilesList[0]);
-        //        }
-        //    }
-        //}
-    }
-
-    private void PlaceTile(BaseTile tile, int i, int j)
+    private void PlaceTile(BaseTile tile, byte i, byte j)
     {
         float tileXSize = ClosedTileTemplate.transform.localScale.x * 3.2f;
         float tileYSize = ClosedTileTemplate.transform.localScale.y * 3.2f;
@@ -89,7 +56,7 @@ public class MapGenerator : MonoBehaviour
         tile.Map = this.Map;
     }
 
-    private void CreateTile(int i, int j)
+    private void CreateTile(byte i, byte j)
     {
         var tile = TilesTable[GenerationMapMatrix[i][j]];
         if (tile is GroundTile)
@@ -98,7 +65,7 @@ public class MapGenerator : MonoBehaviour
             CreateWaterTile(i, j);
     }
 
-    private void CreateGroundTile(int i, int j, GroundTile groundTile)
+    private void CreateGroundTile(byte i, byte j, GroundTile groundTile)
     {
         GroundTile tile = Instantiate(ClosedTileTemplate, this.transform);
 
@@ -107,9 +74,16 @@ public class MapGenerator : MonoBehaviour
         tile.isHidden = false;
     }
 
-    private void CreateWaterTile(int i, int j)
+    private void CreateWaterTile(byte i, byte j)
     {
         WaterTile tile = Instantiate(WaterTileTemplate, this.transform);
         PlaceTile(tile, i, j);
+    }
+
+    public void AddShipTile(ShipTile ship)
+    {
+        byte id = (byte)ShipTiles.Count;
+        ShipTiles.Add(id, ship);
+        ship.Id = id;
     }
 }

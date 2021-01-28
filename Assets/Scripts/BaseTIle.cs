@@ -13,9 +13,9 @@ public class BaseTile : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 
     public BaseTile[][] Map { get; set; }
 
-    public int HorizontalIndex { get; set; }
+    public byte HorizontalIndex { get; set; }
 
-    public int VerticalIndex { get; set; }
+    public byte VerticalIndex { get; set; }
 
     public int maxSize = 5;
 
@@ -49,13 +49,13 @@ public class BaseTile : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     {
         bool isCanMoveYet;
 
-        if (pirate.isAttack)
+        if (pirate.MovementSettings.IsAttack)
         {
             isCanMoveYet = this.TryAttack(pirate);
         }
         else
         {
-            if (pirate.isMoveWithCoin)
+            if (pirate.MovementSettings.IsMoveWithCoin)
                 pirate.TakeCoinFromTile();
             isCanMoveYet = true;
         }
@@ -107,7 +107,7 @@ public class BaseTile : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     {
         pirate.CurrentTile = this;
 
-        if(pirate.isMoveWithCoin)
+        if(pirate.MovementSettings.IsMoveWithCoin)
         {
             this.AddCoin(pirate.SelfCoin);
             pirate.SelfCoin.transform.position = this.transform.position;

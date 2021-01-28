@@ -29,8 +29,8 @@ namespace Assets.Scripts
         public int TopWaterSide = 2;
         public int BottomWaterSide = 2;
 
-        public int GroundWidth = 10;
-        public int GroundLength = 10;
+        public int GroundWidth = 6;
+        public int GroundLength = 6;
 
         public int MinEmptyGroundTiles = 10;
 
@@ -39,16 +39,7 @@ namespace Assets.Scripts
         public int CountGroundTiles => GroundLength * GroundWidth;
 
 
-        private static readonly MapSettings defaultSettings = new MapSettings
-        {
-            LeftWaterSide = 1,
-            RightWaterSide = 1,
-            TopWaterSide = 1,
-            BottomWaterSide = 1,
-            GroundWidth = 4,
-            GroundLength = 4,
-            MinEmptyGroundTiles = 1,
-        };
+        private static readonly MapSettings defaultSettings = new MapSettings();
 
         public static MapSettings Default
         {
@@ -57,8 +48,8 @@ namespace Assets.Scripts
                 //TODO: Придумать как не добавлять каждый раз новую HashTable
                 var defaultMapSettings = defaultSettings;
                 defaultSettings.TilesCategoryTable = new Hashtable();
-                defaultSettings.TilesCategoryTable.Add(1, 7);
-                defaultSettings.TilesCategoryTable.Add(2, 9);
+                defaultSettings.TilesCategoryTable.Add(1, 10);
+                defaultSettings.TilesCategoryTable.Add(2, 26);
 
                 return defaultMapSettings;
             }
