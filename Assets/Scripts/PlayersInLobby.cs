@@ -42,8 +42,9 @@ public class PlayersInLobby : MonoBehaviour
         var readyPlayers = PhotonNetwork.PlayerList.Where(p => (bool)p.CustomProperties["IsReady"]);
         var count = readyPlayers.Count();
 
-        if (count == PhotonNetwork.CountOfPlayers)
+        if (count == PhotonNetwork.CurrentRoom.PlayerCount)
         {
+            StepByStepSystem.SetPlayers(readyPlayers);
             RaiseEventManager.RaiseStartGameEvent();
         }
     }

@@ -28,9 +28,13 @@ public class Pirate : SelectableObject, IDragHandler, IBeginDragHandler, IEndDra
 
     public ShipTile Ship;
 
-    public Player SelfPlayer;
+    public GamePlayer SelfPlayer;
 
     public MovementSettings MovementSettings = new MovementSettings();
+
+    public StepByStepSystem StepSystem;
+
+    private bool isMyTurn => (bool)PhotonNetwork.LocalPlayer.CustomProperties["IsMyTurn"];
 
     void Start()
     {
@@ -50,7 +54,7 @@ public class Pirate : SelectableObject, IDragHandler, IBeginDragHandler, IEndDra
 
     public void OnDrag(PointerEventData eventData)
     {
-        if (!photonView.IsMine)
+        if (!photonView.IsMine || !isMyTurn)
             return;
 
         var groundPlane = new Plane(Vector3.up, Vector3.zero);
@@ -68,7 +72,7 @@ public class Pirate : SelectableObject, IDragHandler, IBeginDragHandler, IEndDra
 
     public void OnBeginDrag(PointerEventData eventData)
     {
-        if (!photonView.IsMine)
+        if (!photonView.IsMine || !isMyTurn)
             return;
 
         Collider.enabled = false;
@@ -77,7 +81,7 @@ public class Pirate : SelectableObject, IDragHandler, IBeginDragHandler, IEndDra
 
     public void OnEndDrag(PointerEventData eventData)
     {
-        if (!photonView.IsMine)
+        if (!photonView.IsMine || !isMyTurn)
             return;
 
         Collider.enabled = true;
@@ -98,6 +102,7 @@ public class Pirate : SelectableObject, IDragHandler, IBeginDragHandler, IEndDra
             };
 
             MoveOnTile();
+            StepByStepSystem.StartNextTurn();
             RaiseEventManager.RaiseMovePirateEvent(pirateMovementData);
         }
         else
@@ -202,8 +207,9 @@ public class Pirate : SelectableObject, IDragHandler, IBeginDragHandler, IEndDra
     public void Die()
     {
         //Заглушка чтобы не уносить с собой при смерти монетки
-        this.MovementSettings.IsMoveWithCoin = false;
-        this.MovementSettings.IsAttack = false;
+        //Создаю новый экземпляр класса, чтобы нормально отправить событие в RaiseMovePirateEvent
+        //И всю эту кашу нужно разгрести!
+        this.MovementSettings = new MovementSettings { IsAttack = false, IsMoveWithCoin = false };
         this.Ship.EnterPirate(this);
     }
 

@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class PirateUI : MonoBehaviour
 {
-    public Player SelfPlayer;
+    public GamePlayer SelfPlayer;
 
     public ChangePirateMovementUI movementUI;
 }

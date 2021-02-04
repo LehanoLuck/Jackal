@@ -132,6 +132,7 @@ MonoBehaviour:
   Collider: {fileID: 9071483994512023151}
   Ship: {fileID: 0}
   SelfPlayer: {fileID: 0}
+  StepSystem: {fileID: 0}
 --- !u!64 &9071483994512023151
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -183,5 +184,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_SynchronizePosition: 1
   m_SynchronizeRotation: 1
-  m_SynchronizeScale: 0
+  m_SynchronizeScale: 1
   m_UseLocal: 0

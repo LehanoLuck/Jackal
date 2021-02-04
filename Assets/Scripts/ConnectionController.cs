@@ -21,7 +21,7 @@ public class ConnectionController : MonoBehaviourPunCallbacks
         SceneManager.LoadScene(0);
     }
 
-    public override void OnPlayerEnteredRoom(Photon.Realtime.Player newPlayer)
+    public override void OnPlayerEnteredRoom(Player newPlayer)
     {
         if(PhotonNetwork.IsMasterClient)
         {

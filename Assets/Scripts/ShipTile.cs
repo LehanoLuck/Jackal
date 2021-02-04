@@ -2,6 +2,7 @@
 using Photon.Pun;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -14,12 +15,14 @@ public class ShipTile : BaseTile, IDragHandler, IBeginDragHandler, IEndDragHandl
     public byte Id { get; set; }
     public Pirate PirateTemplate;
 
-    public Player SelfPlayer;
+    public GamePlayer SelfPlayer;
     private BaseTile tempTile;
     public BoxCollider Collider;
     public bool isInFreeSpace = false;
 
     public List<Pirate> ShipPirates = new List<Pirate>();
+
+    private bool isMyTurn => (bool)PhotonNetwork.LocalPlayer.CustomProperties["IsMyTurn"];
 
     void Start()
     {
@@ -31,7 +34,7 @@ public class ShipTile : BaseTile, IDragHandler, IBeginDragHandler, IEndDragHandl
 
     public void OnBeginDrag(PointerEventData eventData)
     {
-        if (!photonView.IsMine)
+        if (!photonView.IsMine || !isMyTurn)
             return;
 
         Collider.enabled = false;
@@ -45,7 +48,7 @@ public class ShipTile : BaseTile, IDragHandler, IBeginDragHandler, IEndDragHandl
 
     public void OnDrag(PointerEventData eventData)
     {
-        if (!photonView.IsMine)
+        if (!photonView.IsMine || !isMyTurn)
             return;
 
         var groundPlane = new Plane(Vector3.up, Vector3.zero);
@@ -72,42 +75,37 @@ public class ShipTile : BaseTile, IDragHandler, IBeginDragHandler, IEndDragHandl
 
     public void OnEndDrag(PointerEventData eventData)
     {
-        if (!photonView.IsMine)
+        if (!photonView.IsMine || !isMyTurn)
             return;
 
         Collider.enabled = true;
         if (eventData.pointerEnter && eventData.pointerEnter.GetComponent<WaterTile>())
         {
-            if (!isInFreeSpace)
+            if (TryReplace(tempTile))
             {
-                if (TryReplace(tempTile))
+                StepByStepSystem.StartNextTurn();
+                RaiseEventManager.RaiseReplaceShipEvent(
+                new ShipMovementData
                 {
-                    RaiseEventManager.RaiseReplaceShipEvent(
-                        new ShipMovementData
-                        {
-                            Id = Id,
-                            XPos = tempTile.HorizontalIndex,
-                            YPos = tempTile.VerticalIndex
-                        });
-                }
-                else
-                {
-                    this.SetTransformPosition(this.fixedPosition);
-                }
+                    Id = Id,
+                    XPos = tempTile.HorizontalIndex,
+                    YPos = tempTile.VerticalIndex
+                });
+                this.Replace(tempTile);
             }
             else
             {
-                Move(tempTile);
+                this.SetTransformPosition(this.fixedPosition);
             }
         }
         else
         {
             this.SetTransformPosition(this.fixedPosition);
         }
-        //Придумать как реализовать перенос пиратов для всех клиентов
+
         PlacePirateOnTile();
 
-        foreach(Pirate pirate in Pirates)
+        foreach (Pirate pirate in Pirates)
         {
             pirate.Collider.enabled = true;
         }
@@ -149,7 +147,7 @@ public class ShipTile : BaseTile, IDragHandler, IBeginDragHandler, IEndDragHandl
         isInFreeSpace = false;
         Collider.enabled = true;
 
-        SelfPlayer = FindObjectOfType<Player>();
+        SelfPlayer = FindObjectOfType<GamePlayer>();
 
         if(photonView.IsMine)
             this.AddPirateOnTile(3);
@@ -179,8 +177,11 @@ public class ShipTile : BaseTile, IDragHandler, IBeginDragHandler, IEndDragHandl
     public override void AddCoin(Coin coin)
     {
         Destroy(coin.gameObject);
-        var value = ++this.SelfPlayer.PlayerUI.CoinsCount;
-        this.SelfPlayer.PlayerUI.CoinsValue.text = value.ToString();
+        if (photonView.IsMine)
+        {
+            var value = ++this.SelfPlayer.PlayerUI.CoinsCount;
+            this.SelfPlayer.PlayerUI.CoinsValue.text = value.ToString();
+        }
     }
 
     public void OnPhotonInstantiate(PhotonMessageInfo info)

@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 public class ChangePirateMovementUI : MonoBehaviour
 {
-    public Player SelfPlayer;
+    public GamePlayer SelfPlayer;
     public Toggle MovementToggle;
 
     public void ChangePirateMoveState()

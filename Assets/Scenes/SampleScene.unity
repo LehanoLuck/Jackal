@@ -239,7 +239,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.25432277, y: 0.044325452}
   m_AnchorMax: {x: 0.7451182, y: 0.1416627}
-  m_AnchoredPosition: {x: -86.04002, y: 137.5}
+  m_AnchoredPosition: {x: -86.04001, y: 137.5}
   m_SizeDelta: {x: 178.02005, y: 304.1}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &44499102
@@ -375,6 +375,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ShipTileTemplate: {fileID: 4190543239590579343, guid: 3363998fc00907a43af76f4e1a920de2, type: 3}
   mapManager: {fileID: 1243165923}
+  Log: {fileID: 1877574010}
+  CreateShipButton: {fileID: 132979359}
 --- !u!114 &94337221
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -384,13 +386,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 94337215}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d90eef355b6d10849819cd36ce700a44, type: 3}
+  m_Script: {fileID: 11500000, guid: 8bc9359396cdb144f8650b8e0fb6f4ee, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   CurrentPirate: {fileID: 0}
   PirateUI: {fileID: 828999888}
   PlayerUI: {fileID: 44499102}
-  ShipUI: {fileID: 0}
+  ShipUI: {fileID: 132979357}
   isMoveWithItem: 0
 --- !u!1 &132979357
 GameObject:

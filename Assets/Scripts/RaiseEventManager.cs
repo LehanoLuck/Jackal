@@ -19,6 +19,7 @@ namespace Assets.Scripts
         private const int MoveShipEvent = 2;
         private const int ReplaceShipEvent = 3;
         private const int MovePirateEvent = 4;
+        private const int SetNewQueuePlayersEvent = 5;
 
         private const int ShipMovementCode = 1;
         private const int PirateMovementCode = 2;
@@ -55,12 +56,17 @@ namespace Assets.Scripts
 
         public static void RaiseReplaceShipEvent(ShipMovementData shipMovementData)
         {
-            PhotonNetwork.RaiseEvent(ReplaceShipEvent, shipMovementData, raiseEventOptions, sendOptions);
+            PhotonNetwork.RaiseEvent(ReplaceShipEvent, shipMovementData, raiseEventOptionsForOther, sendOptions);
         }
 
         public static void RaiseMovePirateEvent(PirateMovementData pirateMovementData)
         {
             PhotonNetwork.RaiseEvent(MovePirateEvent, pirateMovementData, raiseEventOptionsForOther, sendOptions);
+        }
+
+        public static void RaiseSetNewQueuePlayersEvent(int[] actorNumbers)
+        {
+            PhotonNetwork.RaiseEvent(SetNewQueuePlayersEvent, actorNumbers, raiseEventOptionsForOther, sendOptions);
         }
 
         public void OnEvent(EventData photonEvent)
@@ -89,6 +95,18 @@ namespace Assets.Scripts
                     var pirate = ship.ShipPirates[pirateMovementData.Id];
                     tile = EventMapManager.Map[pirateMovementData.XPos][pirateMovementData.YPos];
                     pirate.MoveOnTile(pirateMovementData, tile);
+                    break;
+                case SetNewQueuePlayersEvent:
+                    var actorNumbers = (int[])photonEvent.CustomData;
+
+                    List<Player> players = new List<Player>();
+                    foreach(int actorNumber in actorNumbers)
+                    {
+                        var player = PhotonNetwork.PlayerList.First(p => p.ActorNumber == actorNumber);
+                        players.Add(player);
+                    }
+
+                    StepByStepSystem.Players = new Queue<Player>(players);
                     break;
             }
         }

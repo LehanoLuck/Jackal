@@ -90,7 +90,7 @@ public class BaseTile : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 
         float radius = count == 1 ? 0 : this.transform.localScale.x * 0.85f;
 
-        for (int i = 0; i < Pirates.Count; i++)
+        for (int i = 0; i < count; i++)
         {
             Pirates[i].transform.localScale = localScale;
 

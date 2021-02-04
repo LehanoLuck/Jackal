@@ -6,6 +6,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 public class ShipManager : MonoBehaviour
 {
@@ -13,18 +14,26 @@ public class ShipManager : MonoBehaviour
     private ShipTile placingShip;
     private Camera GameCamera;
     public MapManager mapManager;
+    //Лога тут быть не должно!!!
+    public Text Log;
+    public Button CreateShipButton;
 
     public void StartPlacingShip()
     {
-        if (placingShip != null)
+        if((bool)PhotonNetwork.LocalPlayer.CustomProperties["IsMyTurn"])
         {
-            Destroy(placingShip.gameObject);
+            if (placingShip != null)
+            {
+                Destroy(placingShip.gameObject);
+            }
+
+            byte id = (byte)mapManager.ShipTiles.Count;
+            var ship = PhotonNetwork.Instantiate(ShipTileTemplate.name, Input.mousePosition, Quaternion.identity, 0, new object[] { id });
+
+            placingShip = ship.GetComponent<ShipTile>();
+            var name = StepByStepSystem.StartNextTurn();
+            Log.text += $"turn to {name}\n";
         }
-
-        byte id = (byte)mapManager.ShipTiles.Count;
-        var ship = PhotonNetwork.Instantiate(ShipTileTemplate.name, Input.mousePosition, Quaternion.identity, 0, new object[] { id });
-
-        placingShip = ship.GetComponent<ShipTile>();
     }
 
     private void Start()
@@ -63,6 +72,8 @@ public class ShipManager : MonoBehaviour
                                 YPos = tile.VerticalIndex 
                             });
                             placingShip = null;
+
+                            CreateShipButton.gameObject.SetActive(false);
                         }
                     }
                 }
