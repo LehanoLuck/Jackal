@@ -3,6 +3,8 @@ using Photon.Pun;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -182,6 +184,24 @@ public class ShipTile : BaseTile, IDragHandler, IBeginDragHandler, IEndDragHandl
             var value = ++this.SelfPlayer.PlayerUI.CoinsCount;
             this.SelfPlayer.PlayerUI.CoinsValue.text = value.ToString();
         }
+
+        var mapManager = FindObjectOfType<MapManager>();
+        MapMatrixManager.CoinsCount--;
+        mapManager.Log.text = $"Coins left - {MapMatrixManager.CoinsCount}";
+
+        if (EndGameManager.IsWin(VictoryCondition.CollectMinimumCoins, SelfPlayer))
+        {
+            RaiseEventManager.RaiseEndGameEvent(PhotonNetwork.LocalPlayer.ActorNumber);
+        }
+
+        //Создать новый ивент
+        //if (SelfPlayer.PlayerUI.CoinsCount >= (double)MapMatrixManager.StartCoinsCount / (double)PhotonNetwork.CurrentRoom.PlayerCount)
+        //{
+        //    mapManager.Log.fontSize = 30;
+        //    mapManager.Log.text = $"{PhotonNetwork.LocalPlayer.NickName} is Win!!!";
+        //    var controller = FindObjectOfType<ConnectionController>();
+        //    controller.LeaveRoom();
+        //}
     }
 
     public void OnPhotonInstantiate(PhotonMessageInfo info)

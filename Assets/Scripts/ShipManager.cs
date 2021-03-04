@@ -14,8 +14,6 @@ public class ShipManager : MonoBehaviour
     private ShipTile placingShip;
     private Camera GameCamera;
     public MapManager mapManager;
-    //Лога тут быть не должно!!!
-    public Text Log;
     public Button CreateShipButton;
 
     public void StartPlacingShip()
@@ -30,9 +28,8 @@ public class ShipManager : MonoBehaviour
             byte id = (byte)mapManager.ShipTiles.Count;
             var ship = PhotonNetwork.Instantiate(ShipTileTemplate.name, Input.mousePosition, Quaternion.identity, 0, new object[] { id });
 
+            StepByStepSystem.StartNextTurn();
             placingShip = ship.GetComponent<ShipTile>();
-            var name = StepByStepSystem.StartNextTurn();
-            Log.text += $"turn to {name}\n";
         }
     }
 

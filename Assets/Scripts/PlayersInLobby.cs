@@ -10,12 +10,15 @@ using System.Linq;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PlayersInLobby : MonoBehaviour
 {
-
     public GameObject playerInfo;
-    public GameObject startGameButton;
+    public Toggle IsUseDefaultSettings;
+    public GenerationSettings Settings;
+    public GameObject MasterPanel;
+    public GameObject GenerationMapSettings;
 
     public Transform parent;
 
@@ -23,10 +26,11 @@ public class PlayersInLobby : MonoBehaviour
     void Start()
     {
         if (PhotonNetwork.IsMasterClient)
-            startGameButton.SetActive(true);
+            MasterPanel.SetActive(true);
 
         AddPlayerInLobby();
         //var a = PhotonPeer.RegisterType(typeof(int[,]), 242, SerealizeMatrix, DeserializeMatrix);
+        
     }
 
     public void AddPlayerInLobby()
@@ -44,9 +48,27 @@ public class PlayersInLobby : MonoBehaviour
 
         if (count == PhotonNetwork.CurrentRoom.PlayerCount)
         {
+            MapSettings mapSettings;
+            if (IsUseDefaultSettings.isOn)
+            {
+                mapSettings = MapSettings.Default;
+            }
+            else
+            {
+                byte width = Convert.ToByte(Settings.mapWidth.value);
+                byte length = Convert.ToByte(Settings.mapLength.value);
+                byte coins = Convert.ToByte(Settings.coinsCount.value);
+                byte ground = Convert.ToByte(Settings.groundCount.value);
+                mapSettings = new MapSettings(width, length, coins, ground);
+            }
             StepByStepSystem.SetPlayers(readyPlayers);
-            RaiseEventManager.RaiseStartGameEvent();
+            RaiseEventManager.RaiseStartGameEvent(mapSettings);
         }
+    }
+
+    public void ChangeMapSettings()
+    {
+        GenerationMapSettings.SetActive(!IsUseDefaultSettings.isOn);
     }
 
     private void OnEnable()
@@ -58,39 +80,4 @@ public class PlayersInLobby : MonoBehaviour
     {
         PhotonNetwork.RemoveCallbackTarget(this);
     }
-
-    //public static object DeserializeMatrix(byte[] data)
-    //{
-    //    byte width = data[data.Length - 2];
-    //    byte length = data[data.Length - 1];
-
-    //    int[,] matrix = new int[width, length];
-
-    //    for (int i = 0; i < matrix.GetLength(0); i++)
-    //    {
-    //        for (int j = 0; j < matrix.GetLength(1); j++)
-    //        {
-    //            matrix[i, j] = BitConverter.ToInt32(data, (i * matrix.GetLength(1) + j) * 4);
-    //        }
-    //    }
-
-    //    return matrix;
-    //}
-
-    //public static byte[] SerealizeMatrix(object obj)
-    //{
-    //    var matrix = obj as int[,];
-
-    //    byte[] array = new byte[matrix.Length * 4 + 2];
-
-    //    int i = 0;
-    //    foreach (var value in matrix)
-    //    {
-    //        BitConverter.GetBytes(value).CopyTo(array, i);
-    //        i += 4;
-    //    }
-    //    array[i++] = Convert.ToByte(matrix.GetLength(0));
-    //    array[i++] = Convert.ToByte(matrix.GetLength(1));
-    //    return array;
-    //}
 }

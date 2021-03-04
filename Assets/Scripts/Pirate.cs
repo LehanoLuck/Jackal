@@ -101,9 +101,9 @@ public class Pirate : SelectableObject, IDragHandler, IBeginDragHandler, IEndDra
                 Settings = MovementSettings
             };
 
-            MoveOnTile();
             StepByStepSystem.StartNextTurn();
             RaiseEventManager.RaiseMovePirateEvent(pirateMovementData);
+            MoveOnTile();
         }
         else
         {

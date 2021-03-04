@@ -33,7 +33,7 @@ public class ConnectionController : MonoBehaviourPunCallbacks
         }
     }
 
-    public override void OnPlayerLeftRoom(Photon.Realtime.Player otherPlayer)
+    public override void OnPlayerLeftRoom(Player otherPlayer)
     {
         Debug.LogFormat("Player {0} left the room", otherPlayer);
     }

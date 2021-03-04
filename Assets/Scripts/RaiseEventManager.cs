@@ -20,6 +20,7 @@ namespace Assets.Scripts
         private const int ReplaceShipEvent = 3;
         private const int MovePirateEvent = 4;
         private const int SetNewQueuePlayersEvent = 5;
+        private const int EndGameEvent = 6;
 
         private const int ShipMovementCode = 1;
         private const int PirateMovementCode = 2;
@@ -42,9 +43,9 @@ namespace Assets.Scripts
             }
         }
 
-        public static void RaiseStartGameEvent()
+        public static void RaiseStartGameEvent(MapSettings settings)
         {
-            int[][] mapMatrix = MapMatrixManager.CreateRandomGenerationMapMatrix(MapSettings.Default);
+            int[][] mapMatrix = MapMatrixManager.CreateRandomGenerationMapMatrix(settings);
 
             PhotonNetwork.RaiseEvent(StartGameEvent, mapMatrix, raiseEventOptions, sendOptions);
         }
@@ -69,12 +70,17 @@ namespace Assets.Scripts
             PhotonNetwork.RaiseEvent(SetNewQueuePlayersEvent, actorNumbers, raiseEventOptionsForOther, sendOptions);
         }
 
+        public static void RaiseEndGameEvent(int actorNumber)
+        {
+            PhotonNetwork.RaiseEvent(EndGameEvent, actorNumber, raiseEventOptions, sendOptions);
+        }
+
         public void OnEvent(EventData photonEvent)
         {
             switch (photonEvent.Code)
             {
                 case StartGameEvent:
-                    MapMatrixManager.GenerationMapMatrix = (int[][])photonEvent.CustomData;
+                    MapMatrixManager.SetGenerationMapMatrix((int[][])photonEvent.CustomData);
                     PhotonNetwork.LoadLevel("SampleScene");
                     break;
                 case MoveShipEvent:
@@ -107,6 +113,10 @@ namespace Assets.Scripts
                     }
 
                     StepByStepSystem.Players = new Queue<Player>(players);
+                    break;
+                case EndGameEvent:
+                    var number = (int)photonEvent.CustomData;
+                    EventMapManager.EndGame(number);
                     break;
             }
         }

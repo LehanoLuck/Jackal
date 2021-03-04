@@ -47,7 +47,7 @@ public class LobbyManager : MonoBehaviourPunCallbacks
     {
         RoomOptions roomOptions = new RoomOptions();
         roomOptions.IsVisible = false;
-        roomOptions.MaxPlayers = 3;
+        roomOptions.MaxPlayers = 4;
         PhotonNetwork.JoinOrCreateRoom(roomName, roomOptions, null);
     }
 

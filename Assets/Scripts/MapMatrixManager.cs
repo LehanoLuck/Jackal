@@ -1,10 +1,21 @@
 ﻿using System;
+using System.Linq;
 
 namespace Assets.Scripts
 {
     public class MapMatrixManager
     {
+        public static int CoinsCount;
+        public static int StartCoinsCount;
+
         public static int[][] GenerationMapMatrix;
+
+        public static void SetGenerationMapMatrix(int[][] mapMatrix)
+        {
+            GenerationMapMatrix = mapMatrix;
+            CoinsCount = mapMatrix.SelectMany(t => t).Where(t => t == 2).ToArray().Length;
+            StartCoinsCount = CoinsCount;
+        }
 
         public static int[][] CreateRandomGenerationMapMatrix(MapSettings mapSettings)
         {

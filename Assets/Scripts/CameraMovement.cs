@@ -21,25 +21,43 @@ namespace Assets.Scripts
 
         #endregion
 
+        #region Angles
+
+        public float viewingAngle; // Угол обзора камеры
+        public float tiltAngle = 60f; // Угол наклона камеры к плоскости
+        public float shortPlaneAngle => tiltAngle + viewingAngle / 2; // Угол между нижней границей обзора камеры и плоскостью
+        public float longPlaneAngle => shortPlaneAngle - viewingAngle; // Угол между верхней границей обзора камеры и плоскостью
+        #endregion
+
+        #region StartTransform
+
+        public Vector3 startRotation;
+        public Vector3 startPosition = new Vector3(0, 0, 0);
+        public Vector3 centerMapPoint = new Vector3(0, 0, 0);
+
+        #endregion
+
         #region Height
 
-        public bool autoHeight = true;
-
-        public float maxHeight = 10f; //maximal height
-        public float minHeight = 15f; //minimnal height
+        public float maxHeight = 25f; //maximal height
+        public float minHeight = 5f; //minimnal height
         public float heightDampening = 5f;
         public float keyboardZoomingSensitivity = 2f;
-        public float scrollWheelZoomingSensitivity = 25f;
+        public float scrollWheelZoomingSensitivity = 250f;
 
         private float zoomPos = 0; //value in range (0, 1) used as t in Matf.Lerp
 
         #endregion
 
+
         #region MapLimits
 
         public bool limitMap = true;
-        public float limitX = 50f; //x limit of map
-        public float limitY = 50f; //z limit of map
+        public float fixedLimitX = 0f;
+        public float fixedLimitY = 0f;
+        public float shortLimitX = 0f; //x limit of map
+        public float longLimitX = 0f; //x limit of map
+        public float limitY = 0f; //x limit of map
 
         #endregion
 
@@ -149,6 +167,13 @@ namespace Assets.Scripts
         private void Start()
         {
             m_Transform = transform;
+            startRotation = new Vector3(tiltAngle, 0, 0);
+            transform.rotation = Quaternion.Euler(startRotation);
+            viewingAngle = gameObject.GetComponent<Camera>().fieldOfView;
+
+            shortLimitX = fixedLimitX;
+            longLimitX = fixedLimitX;
+            limitY = fixedLimitY;
         }
 
         private void Update()
@@ -255,6 +280,16 @@ namespace Assets.Scripts
 
             float targetHeight = Mathf.Lerp(maxHeight, minHeight, zoomPos);
 
+            var longPlaneNormalAngle = Mathf.Deg2Rad * (90f - (tiltAngle - viewingAngle / 2)); // Угол между верхней границей камеры и перпендикуляром опущенным к плоскости
+
+            float longLimitDistance = ((maxHeight - targetHeight) * Mathf.Tan(longPlaneNormalAngle));
+            float shortLimitDistance = (maxHeight - targetHeight) / Mathf.Tan(Mathf.Deg2Rad * shortPlaneAngle);
+
+            shortLimitX = fixedLimitX + shortLimitDistance;
+            longLimitX = fixedLimitX + longLimitDistance;
+            limitY = fixedLimitY + longLimitDistance;
+
+            
             m_Transform.position = Vector3.Lerp(m_Transform.position,
                 new Vector3(m_Transform.position.x, targetHeight, m_Transform.position.z), Time.deltaTime * heightDampening);
         }
@@ -265,10 +300,10 @@ namespace Assets.Scripts
         private void Rotation()
         {
             if (useKeyboardRotation)
-                transform.Rotate(Vector3.up, RotationDirection * Time.deltaTime * rotationSped, Space.World);
+                transform.RotateAround(centerMapPoint, Vector3.up, RotationDirection * Time.deltaTime * rotationSped);
 
             if (useMouseRotation && Input.GetKey(mouseRotationKey))
-                m_Transform.Rotate(Vector3.up, -MouseAxis.x * Time.deltaTime * mouseRotationSpeed, Space.World);
+                m_Transform.RotateAround(centerMapPoint, Vector3.up, -MouseAxis.x * Time.deltaTime * mouseRotationSpeed);
         }
 
         /// <summary>
@@ -288,9 +323,9 @@ namespace Assets.Scripts
             if (!limitMap)
                 return;
 
-            m_Transform.position = new Vector3(Mathf.Clamp(m_Transform.position.x, -limitX, limitX),
+            m_Transform.position = new Vector3(Mathf.Clamp(m_Transform.position.x, startPosition.x - limitY, startPosition.x + limitY),
                 m_Transform.position.y,
-                Mathf.Clamp(m_Transform.position.z, -limitY, limitY));
+                Mathf.Clamp(m_Transform.position.z, startPosition.z+ shortLimitX, startPosition.z + longLimitX));
         }
 
         /// <summary>
@@ -311,5 +346,10 @@ namespace Assets.Scripts
         }
 
         #endregion
+
+        public void SetPositionToStart()
+        {
+            m_Transform.position = startPosition;
+        }
     }
 }
