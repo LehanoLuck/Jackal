@@ -68,7 +68,7 @@ public class MapManager : MonoBehaviour
         camera.maxHeight = yPos;
         camera.startPosition = new Vector3(xPos, yPos, zPos);
         camera.SetPositionToStart();
-        camera.centerMapPoint = new Vector3(xPos, 0f, width / 2 - 1.6f);
+        camera.mapSize = Mathf.Max(length, width);
     }
 
     private void PlaceTile(BaseTile tile, byte i, byte j)

@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 namespace Assets.Scripts
 {
@@ -14,7 +15,6 @@ namespace Assets.Scripts
 
         public float keyboardMovementSpeed = 5f; //speed with keyboard movement
         public float screenEdgeMovementSpeed = 3f; //speed with screen edge movement
-        public float followingSpeed = 5f; //speed when following a target
         public float rotationSped = 3f;
         public float panningSpeed = 10f;
         public float mouseRotationSpeed = 10f;
@@ -23,24 +23,24 @@ namespace Assets.Scripts
 
         #region Angles
 
-        public float viewingAngle; // Угол обзора камеры
-        public float tiltAngle = 60f; // Угол наклона камеры к плоскости
-        public float shortPlaneAngle => tiltAngle + viewingAngle / 2; // Угол между нижней границей обзора камеры и плоскостью
-        public float longPlaneAngle => shortPlaneAngle - viewingAngle; // Угол между верхней границей обзора камеры и плоскостью
+        public float viewingAngle; //camera angle
+        public float tiltAngle = 60f; //tilt angle of the camera to the plane
+        public float shortPlaneAngle => tiltAngle + viewingAngle / 2; //angle between the lower boundary of the camera's view and the plane
+        public float longPlaneAngle => shortPlaneAngle - viewingAngle; //angle between the upper boundary of the camera's view and the plane
         #endregion
 
         #region StartTransform
 
-        public Vector3 startRotation;
         public Vector3 startPosition = new Vector3(0, 0, 0);
-        public Vector3 centerMapPoint = new Vector3(0, 0, 0);
+        public Vector3 centerMapPoint;
+        public Vector3 focusPoint = new Vector3(0, 0, 0);
 
         #endregion
 
         #region Height
 
-        public float maxHeight = 25f; //maximal height
-        public float minHeight = 5f; //minimnal height
+        public float maxHeight = 25f;
+        public float minHeight = 5f;
         public float heightDampening = 5f;
         public float keyboardZoomingSensitivity = 2f;
         public float scrollWheelZoomingSensitivity = 250f;
@@ -53,44 +53,21 @@ namespace Assets.Scripts
         #region MapLimits
 
         public bool limitMap = true;
-        public float fixedLimitX = 0f;
-        public float fixedLimitY = 0f;
-        public float shortLimitX = 0f; //x limit of map
-        public float longLimitX = 0f; //x limit of map
-        public float limitY = 0f; //x limit of map
-
-        #endregion
-
-        #region Targeting
-
-        public Transform targetFollow; //target to follow
-        public Vector3 targetOffset;
-
-        /// <summary>
-        /// are we following target
-        /// </summary>
-        public bool FollowingTarget
-        {
-            get
-            {
-                return targetFollow != null;
-            }
-        }
+        public float mapSize = 20f;
+        public float limitValue;
+        public float limitShift;
 
         #endregion
 
         #region Input
 
-        public bool useScreenEdgeInput = true;
+        public bool useScreenEdgeInput = false;
         public float screenEdgeBorder = 50f;
         public float outScreenEdgeBorder = 200f; //Диапазон за пределами экрана, входящая в диапазон 'видения' курсора мыши
 
         public bool useKeyboardInput = true;
         public string horizontalAxis = "Horizontal";
         public string verticalAxis = "Vertical";
-
-        public bool usePanning = true;
-        public KeyCode panningKey = KeyCode.Mouse2;
 
         public bool useKeyboardZooming = true;
         public KeyCode zoomInKey = KeyCode.E;
@@ -105,6 +82,8 @@ namespace Assets.Scripts
 
         public bool useMouseRotation = true;
         public KeyCode mouseRotationKey = KeyCode.Mouse1;
+
+        private IDictionary savePoints;
 
         private Vector2 KeyboardInput
         {
@@ -167,13 +146,10 @@ namespace Assets.Scripts
         private void Start()
         {
             m_Transform = transform;
-            startRotation = new Vector3(tiltAngle, 0, 0);
-            transform.rotation = Quaternion.Euler(startRotation);
+            m_Transform.rotation = Quaternion.Euler(new Vector3(tiltAngle, 0, 0));
             viewingAngle = gameObject.GetComponent<Camera>().fieldOfView;
-
-            shortLimitX = fixedLimitX;
-            longLimitX = fixedLimitX;
-            limitY = fixedLimitY;
+            DefineCenterMapPoint();
+            SetStartPoints();
         }
 
         private void Update()
@@ -197,19 +173,20 @@ namespace Assets.Scripts
         /// </summary>
         private void CameraUpdate()
         {
-            if (FollowingTarget)
-                FollowTarget();
-            else
-                TryMove();
+            TryMove();
 
             Rotation();
             LimitPosition();
             HeightCalculation();
+            UseSavePoints();
         }
 
+        /// <summary>
+        /// move camera if the key isn't pressed to rotate the camera
+        /// </summary>
         private void TryMove()
         {
-            if(!Input.GetKey(mouseRotationKey) && !Input.GetKey(KeyCode.Mouse0))
+            if(!Input.GetKey(KeyCode.Mouse0))
             {
                 Move();
             }
@@ -231,33 +208,19 @@ namespace Assets.Scripts
 
                 m_Transform.Translate(desiredMove, Space.Self);
             }
-
-            if (useScreenEdgeInput)
+            if(useScreenEdgeInput && KeyboardInput.x==0 && KeyboardInput.y==0)
             {
                 Vector3 desiredMove = new Vector3();
 
-                //TODO Осторожно, говнокод, 200f - взято просто так 
-                Rect leftRect = new Rect(-200f, 0, screenEdgeBorder + 200f, Screen.height);
-                Rect rightRect = new Rect(Screen.width - screenEdgeBorder, 0, screenEdgeBorder + 200f, Screen.height);
-                Rect upRect = new Rect(0, Screen.height - screenEdgeBorder, Screen.width, screenEdgeBorder + 200f);
-                Rect downRect = new Rect(0, -200f, Screen.width, screenEdgeBorder + 200f);
+                Rect leftRect = new Rect(-outScreenEdgeBorder, 0, screenEdgeBorder + outScreenEdgeBorder, Screen.height);
+                Rect rightRect = new Rect(Screen.width - screenEdgeBorder, 0, screenEdgeBorder + outScreenEdgeBorder, Screen.height);
+                Rect upRect = new Rect(0, Screen.height - screenEdgeBorder, Screen.width, screenEdgeBorder + outScreenEdgeBorder);
+                Rect downRect = new Rect(0, -outScreenEdgeBorder, Screen.width, screenEdgeBorder + outScreenEdgeBorder);
 
                 desiredMove.x = leftRect.Contains(MouseInput) ? -1 : rightRect.Contains(MouseInput) ? 1 : 0;
                 desiredMove.z = upRect.Contains(MouseInput) ? 1 : downRect.Contains(MouseInput) ? -1 : 0;
 
                 desiredMove *= screenEdgeMovementSpeed;
-                desiredMove *= Time.deltaTime;
-                desiredMove = Quaternion.Euler(new Vector3(0f, transform.eulerAngles.y, 0f)) * desiredMove;
-                desiredMove = m_Transform.InverseTransformDirection(desiredMove);
-
-                m_Transform.Translate(desiredMove, Space.Self);
-            }
-
-            if (usePanning && Input.GetKey(panningKey) && MouseAxis != Vector2.zero)
-            {
-                Vector3 desiredMove = new Vector3(-MouseAxis.x, 0, -MouseAxis.y);
-
-                desiredMove *= panningSpeed;
                 desiredMove *= Time.deltaTime;
                 desiredMove = Quaternion.Euler(new Vector3(0f, transform.eulerAngles.y, 0f)) * desiredMove;
                 desiredMove = m_Transform.InverseTransformDirection(desiredMove);
@@ -279,19 +242,14 @@ namespace Assets.Scripts
             zoomPos = Mathf.Clamp01(zoomPos);
 
             float targetHeight = Mathf.Lerp(maxHeight, minHeight, zoomPos);
+            limitShift = (maxHeight - targetHeight) / Mathf.Tan(Mathf.Deg2Rad * shortPlaneAngle); //Передняя граница камеры
+            limitValue = (mapSize - targetHeight / maxHeight * mapSize) - limitShift; //Величина границы передвижения камеры
 
-            var longPlaneNormalAngle = Mathf.Deg2Rad * (90f - (tiltAngle - viewingAngle / 2)); // Угол между верхней границей камеры и перпендикуляром опущенным к плоскости
+            Ray ray = Camera.main.ScreenPointToRay(new Vector2(Camera.main.pixelWidth / 2, Camera.main.pixelHeight / 2));
+            focusPoint = ray.GetPoint(Mathf.Sqrt(Mathf.Pow(targetHeight, 2f) + Mathf.Pow(mapSize - limitValue, 2)));
 
-            float longLimitDistance = ((maxHeight - targetHeight) * Mathf.Tan(longPlaneNormalAngle));
-            float shortLimitDistance = (maxHeight - targetHeight) / Mathf.Tan(Mathf.Deg2Rad * shortPlaneAngle);
-
-            shortLimitX = fixedLimitX + shortLimitDistance;
-            longLimitX = fixedLimitX + longLimitDistance;
-            limitY = fixedLimitY + longLimitDistance;
-
-            
             m_Transform.position = Vector3.Lerp(m_Transform.position,
-                new Vector3(m_Transform.position.x, targetHeight, m_Transform.position.z), Time.deltaTime * heightDampening);
+                new Vector3(m_Transform.position.x, targetHeight, m_Transform.position.z) + transform.forward * limitShift, Time.deltaTime * heightDampening);
         }
 
         /// <summary>
@@ -300,19 +258,10 @@ namespace Assets.Scripts
         private void Rotation()
         {
             if (useKeyboardRotation)
-                transform.RotateAround(centerMapPoint, Vector3.up, RotationDirection * Time.deltaTime * rotationSped);
+                m_Transform.RotateAround(focusPoint, Vector3.up, RotationDirection * Time.deltaTime * rotationSped);
 
             if (useMouseRotation && Input.GetKey(mouseRotationKey))
-                m_Transform.RotateAround(centerMapPoint, Vector3.up, -MouseAxis.x * Time.deltaTime * mouseRotationSpeed);
-        }
-
-        /// <summary>
-        /// follow targetif target != null
-        /// </summary>
-        private void FollowTarget()
-        {
-            Vector3 targetPos = new Vector3(targetFollow.position.x, m_Transform.position.y, targetFollow.position.z) + targetOffset;
-            m_Transform.position = Vector3.MoveTowards(m_Transform.position, targetPos, Time.deltaTime * followingSpeed);
+                m_Transform.RotateAround(focusPoint, Vector3.up, -MouseAxis.x * Time.deltaTime * mouseRotationSpeed);
         }
 
         /// <summary>
@@ -323,33 +272,88 @@ namespace Assets.Scripts
             if (!limitMap)
                 return;
 
-            m_Transform.position = new Vector3(Mathf.Clamp(m_Transform.position.x, startPosition.x - limitY, startPosition.x + limitY),
+            var yAngle = Mathf.Deg2Rad * (transform.rotation.eulerAngles.y);
+            var xPos = centerMapPoint.x + (transform.position.x - centerMapPoint.x) * Mathf.Cos(yAngle) - (transform.position.z - centerMapPoint.z) * Mathf.Sin(yAngle);
+            var zPos = centerMapPoint.z + (transform.position.x - centerMapPoint.x) * Mathf.Sin(yAngle) + (transform.position.z - centerMapPoint.z) * Mathf.Cos(yAngle);
+
+            var tempPoint = new Vector3(Mathf.Clamp(xPos, startPosition.x-limitValue, startPosition.x + limitValue),
                 m_Transform.position.y,
-                Mathf.Clamp(m_Transform.position.z, startPosition.z+ shortLimitX, startPosition.z + longLimitX));
+                Mathf.Clamp(zPos, startPosition.z, startPosition.z + limitValue));
+
+            var _xPos = centerMapPoint.x + (tempPoint.x - centerMapPoint.x) * Mathf.Cos(-yAngle) - (tempPoint.z - centerMapPoint.z) * Mathf.Sin(-yAngle);
+            var _zPos = centerMapPoint.z + (tempPoint.x - centerMapPoint.x) * Mathf.Sin(-yAngle) + (tempPoint.z - centerMapPoint.z) * Mathf.Cos(-yAngle);
+
+            m_Transform.position = new Vector3(_xPos, transform.position.y, _zPos);
         }
 
         /// <summary>
-        /// set the target
+        /// Define center map point
         /// </summary>
-        /// <param name="target"></param>
-        public void SetTarget(Transform target)
+        private void DefineCenterMapPoint()
         {
-            targetFollow = target;
+            Ray ray = Camera.main.ScreenPointToRay(new Vector2(Camera.main.pixelWidth / 2, Camera.main.pixelHeight / 2));
+            centerMapPoint = ray.GetPoint(Mathf.Sqrt(Mathf.Pow(maxHeight, 2f) + Mathf.Pow(mapSize / 2, 2)));
         }
-
-        /// <summary>
-        /// reset the target (target is set to null)
-        /// </summary>
-        public void ResetTarget()
-        {
-            targetFollow = null;
-        }
-
         #endregion
 
+        /// <summary>
+        /// Set start camera position
+        /// </summary>
         public void SetPositionToStart()
         {
             m_Transform.position = startPosition;
+        }
+
+        private void UseSavePoints()
+        {
+            AddSavePoint();
+            LoadSavePoint();
+        }
+
+        private void SetStartPoints()
+        {
+            savePoints = new Dictionary<KeyCode, (float, Vector3, Quaternion)>();
+            savePoints.Add(KeyCode.Alpha0, (zoomPos,transform.position,transform.rotation));
+            savePoints.Add(KeyCode.Alpha1, (zoomPos, transform.position, transform.rotation));
+            savePoints.Add(KeyCode.Alpha2, (zoomPos, transform.position, transform.rotation));
+            savePoints.Add(KeyCode.Alpha3, (zoomPos, transform.position, transform.rotation));
+            savePoints.Add(KeyCode.Alpha4, (zoomPos, transform.position, transform.rotation));
+            savePoints.Add(KeyCode.Alpha5, (zoomPos, transform.position, transform.rotation));
+            savePoints.Add(KeyCode.Alpha6, (zoomPos, transform.position, transform.rotation));
+            savePoints.Add(KeyCode.Alpha7, (zoomPos, transform.position, transform.rotation));
+            savePoints.Add(KeyCode.Alpha8, (zoomPos, transform.position, transform.rotation));
+            savePoints.Add(KeyCode.Alpha9, (zoomPos, transform.position, transform.rotation));
+        }
+
+        private void AddSavePoint()
+        {
+            if(Input.GetKey(KeyCode.LeftAlt))
+            {
+                foreach (KeyCode key in savePoints.Keys)
+                {
+                    if (Input.GetKey(key))
+                    {
+                        savePoints[key] = (zoomPos, transform.position, transform.rotation);
+                    }
+                }
+            }
+        }
+
+        private void LoadSavePoint()
+        {
+            if(Input.GetKey(KeyCode.LeftShift))
+            {
+                foreach (KeyCode key in savePoints.Keys)
+                {
+                    if (Input.GetKey(key))
+                    {
+                        var turple = ((float, Vector3, Quaternion))savePoints[key];
+                        zoomPos = turple.Item1;
+                        transform.position = turple.Item2;
+                        transform.rotation = turple.Item3;
+                    }
+                }
+            }
         }
     }
 }

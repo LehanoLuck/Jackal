@@ -895,28 +895,23 @@ MonoBehaviour:
   useFixedUpdate: 0
   keyboardMovementSpeed: 15
   screenEdgeMovementSpeed: 9
-  followingSpeed: 15
   rotationSped: 30
   panningSpeed: 30
   mouseRotationSpeed: 100
   viewingAngle: 60
   tiltAngle: 60
-  startRotation: {x: 60, y: 0, z: 0}
   startPosition: {x: 0, y: 0, z: 0}
   centerMapPoint: {x: 0, y: 0, z: 0}
+  focusPoint: {x: 0, y: 0, z: 0}
   maxHeight: 25
   minHeight: 5
   heightDampening: 5
   keyboardZoomingSensitivity: 2
   scrollWheelZoomingSensitivity: 25
   limitMap: 1
-  fixedLimitX: 0
-  fixedLimitY: 0
-  shortLimitX: 0
-  longLimitX: 0
-  limitY: 8
-  targetFollow: {fileID: 0}
-  targetOffset: {x: 0, y: 0, z: 0}
+  mapSize: 20
+  limitValue: 0
+  limitShift: 0
   useScreenEdgeInput: 1
   screenEdgeBorder: 25
   outScreenEdgeBorder: 200
