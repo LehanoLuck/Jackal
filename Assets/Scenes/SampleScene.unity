@@ -239,7 +239,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.25432277, y: 0.044325452}
   m_AnchorMax: {x: 0.7451182, y: 0.1416627}
-  m_AnchoredPosition: {x: -86.04001, y: 137.5}
+  m_AnchoredPosition: {x: -86.040016, y: 137.5}
   m_SizeDelta: {x: 178.02005, y: 304.1}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &44499102
@@ -276,7 +276,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &94337216
 RectTransform:
   m_ObjectHideFlags: 0
@@ -912,14 +912,12 @@ MonoBehaviour:
   mapSize: 20
   limitValue: 0
   limitShift: 0
-  useScreenEdgeInput: 1
+  useScreenEdgeInput: 0
   screenEdgeBorder: 25
   outScreenEdgeBorder: 200
   useKeyboardInput: 1
   horizontalAxis: Horizontal
   verticalAxis: Vertical
-  usePanning: 1
-  panningKey: 325
   useKeyboardZooming: 1
   zoomInKey: 101
   zoomOutKey: 113
@@ -1171,7 +1169,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   camera: {fileID: 963194230}
-  ClosedTileTemplate: {fileID: 8374229652451591, guid: 475c9ac0e1c43b54bafd1a899a8b9117, type: 3}
+  ClosedTileTemplate: {fileID: 1546859273666413450, guid: 155e3d275f9a81a4b94d0e4b6876c7f7, type: 3}
   GroundTileTemplate: {fileID: 1546859273666413450, guid: 155e3d275f9a81a4b94d0e4b6876c7f7, type: 3}
   WaterTileTemplate: {fileID: 5138706614829363376, guid: fa0ca7fb13872ce4f9042983ffaea756, type: 3}
   CoinTileTemplate: {fileID: 7527705423105074625, guid: 5556e98330d4814468e19e7c24c20232, type: 3}

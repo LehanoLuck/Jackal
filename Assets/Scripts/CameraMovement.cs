@@ -186,7 +186,7 @@ namespace Assets.Scripts
         /// </summary>
         private void TryMove()
         {
-            if(!Input.GetKey(KeyCode.Mouse0))
+            if(!Input.GetKey(KeyCode.Mouse0) && !Input.GetKey(mouseRotationKey))
             {
                 Move();
             }
@@ -208,7 +208,7 @@ namespace Assets.Scripts
 
                 m_Transform.Translate(desiredMove, Space.Self);
             }
-            if(useScreenEdgeInput && KeyboardInput.x==0 && KeyboardInput.y==0)
+            if(useScreenEdgeInput)
             {
                 Vector3 desiredMove = new Vector3();
 
@@ -312,7 +312,7 @@ namespace Assets.Scripts
 
         private void SetStartPoints()
         {
-            savePoints = new Dictionary<KeyCode, (float, Vector3, Quaternion)>();
+            savePoints = new Hashtable();
             savePoints.Add(KeyCode.Alpha0, (zoomPos,transform.position,transform.rotation));
             savePoints.Add(KeyCode.Alpha1, (zoomPos, transform.position, transform.rotation));
             savePoints.Add(KeyCode.Alpha2, (zoomPos, transform.position, transform.rotation));
