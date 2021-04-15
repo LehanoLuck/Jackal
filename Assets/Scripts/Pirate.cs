@@ -86,7 +86,7 @@ public class Pirate : SelectableObject, IDragHandler, IBeginDragHandler, IEndDra
             return;
 
         Collider.enabled = true;
-
+        CurrentTile.HideAvailableForMoveCells();
         var isCanMove = IsCanMoveOnTile(eventData);
 
         if (isCanMove)

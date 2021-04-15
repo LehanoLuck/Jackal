@@ -19,6 +19,7 @@ namespace Assets.Scripts
             hidden.SetTransformPosition(this.fixedPosition);
             hidden.XPos = this.XPos;
             hidden.YPos = this.YPos;
+            hidden.Map = this.Map;
             Map[XPos][YPos] = hidden;
             hidden.Pirates = this.Pirates;
 
@@ -34,12 +35,6 @@ namespace Assets.Scripts
             {
                 var hidden = this.OpenTile();
                 hidden.SetCurrentPirateTile(pirate);
-
-                //if(pirate.isMoveWithCoin)
-                //{
-                //    hidden.AddCoin(pirate.SelfCoin);
-                //    pirate.SelfCoin.transform.position = hidden.transform.position;
-                //}
             }
             else
             {

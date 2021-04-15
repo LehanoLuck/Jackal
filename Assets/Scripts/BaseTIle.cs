@@ -12,13 +12,11 @@ public class BaseTile : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     void Start()
     {
         DefaultColor = GetComponentInChildren<MeshRenderer>().material.color;
-        EnterColor = DefaultColor += new Color(0, 100, 0, 100);
-        ClosedColor = DefaultColor += new Color(100, 0, 0, 100);
+        EnterColor = DefaultColor + new Color(0, 0.8f, 0, 0.5f);
     }
 
     protected Color DefaultColor;
     protected Color EnterColor;
-    protected Color ClosedColor;
 
     public Stack<Coin> Coins { get; set; } = new Stack<Coin>();
 
@@ -168,6 +166,16 @@ public class BaseTile : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
         foreach (var tile in tilesList)
         {
             tile.GetComponentInChildren<MeshRenderer>().material.color = tile.EnterColor;
+        }
+    }
+
+    public void HideAvailableForMoveCells()
+    {
+        var tilesList = this.GetPossibleTiles();
+
+        foreach (var tile in tilesList)
+        {
+            tile.GetComponentInChildren<MeshRenderer>().material.color = tile.DefaultColor;
         }
     }
 
