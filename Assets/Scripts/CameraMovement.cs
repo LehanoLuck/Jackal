@@ -16,7 +16,6 @@ namespace Assets.Scripts
         public float keyboardMovementSpeed = 5f; //speed with keyboard movement
         public float screenEdgeMovementSpeed = 3f; //speed with screen edge movement
         public float rotationSped = 3f;
-        public float panningSpeed = 10f;
         public float mouseRotationSpeed = 10f;
 
         #endregion
@@ -177,7 +176,7 @@ namespace Assets.Scripts
 
             Rotation();
             LimitPosition();
-            HeightCalculation();
+            Zoom();
             UseSavePoints();
         }
 
@@ -232,7 +231,7 @@ namespace Assets.Scripts
         /// <summary>
         /// calcualte height
         /// </summary>
-        private void HeightCalculation()
+        private void Zoom()
         {
             if (useScrollwheelZooming)
                 zoomPos += ScrollWheel * Time.deltaTime * scrollWheelZoomingSensitivity;
@@ -242,14 +241,25 @@ namespace Assets.Scripts
             zoomPos = Mathf.Clamp01(zoomPos);
 
             float targetHeight = Mathf.Lerp(maxHeight, minHeight, zoomPos);
-            limitShift = (maxHeight - targetHeight) / Mathf.Tan(Mathf.Deg2Rad * shortPlaneAngle); //Передняя граница камеры
-            limitValue = (mapSize - targetHeight / maxHeight * mapSize) - limitShift; //Величина границы передвижения камеры
-
-            Ray ray = Camera.main.ScreenPointToRay(new Vector2(Camera.main.pixelWidth / 2, Camera.main.pixelHeight / 2));
-            focusPoint = ray.GetPoint(Mathf.Sqrt(Mathf.Pow(targetHeight, 2f) + Mathf.Pow(mapSize - limitValue, 2)));
 
             m_Transform.position = Vector3.Lerp(m_Transform.position,
-                new Vector3(m_Transform.position.x, targetHeight, m_Transform.position.z) + transform.forward * limitShift, Time.deltaTime * heightDampening);
+                new Vector3(m_Transform.position.x, targetHeight, m_Transform.position.z) + 
+                transform.forward * limitShift, Time.deltaTime * heightDampening);
+
+            DefineFocusPoint(targetHeight);
+            DefineLimitProperties(targetHeight);
+        }
+
+        private void DefineFocusPoint(float targetHeight)
+        {
+            Ray ray = Camera.main.ScreenPointToRay(new Vector2(Camera.main.pixelWidth / 2, Camera.main.pixelHeight / 2));
+            focusPoint = ray.GetPoint(Mathf.Sqrt(Mathf.Pow(targetHeight, 2f) + Mathf.Pow(mapSize - limitValue, 2)));
+        }
+
+        private void DefineLimitProperties(float targetHeight)
+        {
+            limitShift = (maxHeight - targetHeight) / Mathf.Tan(Mathf.Deg2Rad * shortPlaneAngle);
+            limitValue = (mapSize - targetHeight / maxHeight * mapSize) - limitShift;
         }
 
         /// <summary>
@@ -347,10 +357,10 @@ namespace Assets.Scripts
                 {
                     if (Input.GetKey(key))
                     {
-                        var turple = ((float, Vector3, Quaternion))savePoints[key];
-                        zoomPos = turple.Item1;
-                        transform.position = turple.Item2;
-                        transform.rotation = turple.Item3;
+                        var savePoint = ((float, Vector3, Quaternion))savePoints[key];
+                        zoomPos = savePoint.Item1;
+                        transform.position = savePoint.Item2;
+                        transform.rotation = savePoint.Item3;
                     }
                 }
             }
