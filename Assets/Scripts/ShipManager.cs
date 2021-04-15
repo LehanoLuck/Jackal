@@ -65,8 +65,8 @@ public class ShipManager : MonoBehaviour
                             var tile = obj.GetComponent<WaterTile>();
                             RaiseEventManager.RaiseMoveShipEvent(new ShipMovementData 
                             { Id = placingShip.Id, 
-                                XPos = tile.HorizontalIndex, 
-                                YPos = tile.VerticalIndex 
+                                XPos = tile.XPos, 
+                                YPos = tile.YPos 
                             });
                             placingShip = null;
 

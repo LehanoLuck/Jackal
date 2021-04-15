@@ -127,9 +127,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 245f466f680a75147ae2de4398bf8d2b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxSize: 5
+  MaxPirateSize: 5
   HiddenTile: {fileID: 0}
-  isHidden: 1
+  IsHidden: 1
   coinTemplate: {fileID: 4459732580828453513, guid: 2d71ccb3d805e324a9fe7434ccbf0a12, type: 3}
 --- !u!65 &8380519072983791940
 BoxCollider:

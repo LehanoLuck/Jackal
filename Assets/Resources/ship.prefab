@@ -61,7 +61,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7ec350d8c04a4fa4a963d6f088e1eefe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxSize: 5
+  MaxPirateSize: 5
   PirateTemplate: {fileID: 5127521087970736391, guid: 186359f6c0e5a3f43955f128267926f9, type: 3}
   SelfPlayer: {fileID: 0}
   Collider: {fileID: 0}

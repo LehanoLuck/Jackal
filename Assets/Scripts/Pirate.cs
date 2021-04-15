@@ -77,6 +77,7 @@ public class Pirate : SelectableObject, IDragHandler, IBeginDragHandler, IEndDra
 
         Collider.enabled = false;
         StartPosition = this.transform.position;
+        CurrentTile.ShowAvailableForMoveCells();
     }
 
     public void OnEndDrag(PointerEventData eventData)
@@ -96,8 +97,8 @@ public class Pirate : SelectableObject, IDragHandler, IBeginDragHandler, IEndDra
             {
                 Id = this.Id,
                 ShipId = this.Ship.Id,
-                XPos = TargetTile.HorizontalIndex,
-                YPos = TargetTile.VerticalIndex,
+                XPos = TargetTile.XPos,
+                YPos = TargetTile.YPos,
                 Settings = MovementSettings
             };
 
@@ -121,7 +122,7 @@ public class Pirate : SelectableObject, IDragHandler, IBeginDragHandler, IEndDra
 
         if(TargetTile)
         {
-            return IsCanMoveOnTile();
+            return TargetTile.IsCanMoveOnThisTileFromCurrentTile(CurrentTile);
         }
         else
         {
@@ -143,15 +144,6 @@ public class Pirate : SelectableObject, IDragHandler, IBeginDragHandler, IEndDra
                 }
             }
             return null;
-        }
-
-        bool IsCanMoveOnTile()
-        {
-            return (CurrentTile != TargetTile &&
-            (Math.Abs(TargetTile.HorizontalIndex - CurrentTile.HorizontalIndex) < 2) &&
-            (Math.Abs(TargetTile.VerticalIndex - CurrentTile.VerticalIndex) < 2) &&
-            !(TargetTile is WaterTile) &&
-            (TargetTile.Pirates.Count < TargetTile.maxSize));
         }
     }
 

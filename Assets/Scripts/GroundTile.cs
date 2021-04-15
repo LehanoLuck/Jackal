@@ -11,15 +11,15 @@ namespace Assets.Scripts
     {
         public GroundTile HiddenTile;
 
-        public bool isHidden;
+        public bool IsHidden;
 
         public virtual GroundTile OpenTile()
         {
             var hidden = Instantiate(HiddenTile, this.transform.parent);
             hidden.SetTransformPosition(this.fixedPosition);
-            hidden.HorizontalIndex = this.HorizontalIndex;
-            hidden.VerticalIndex = this.VerticalIndex;
-            Map[HorizontalIndex][VerticalIndex] = hidden;
+            hidden.XPos = this.XPos;
+            hidden.YPos = this.YPos;
+            Map[XPos][YPos] = hidden;
             hidden.Pirates = this.Pirates;
 
             Destroy(gameObject);
@@ -30,7 +30,7 @@ namespace Assets.Scripts
 
         protected override void SetCurrentPirateTile(Pirate pirate)
         {
-            if (!isHidden)
+            if (!IsHidden)
             {
                 var hidden = this.OpenTile();
                 hidden.SetCurrentPirateTile(pirate);

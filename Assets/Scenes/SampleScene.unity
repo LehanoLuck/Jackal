@@ -276,7 +276,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &94337216
 RectTransform:
   m_ObjectHideFlags: 0
@@ -896,7 +896,6 @@ MonoBehaviour:
   keyboardMovementSpeed: 15
   screenEdgeMovementSpeed: 9
   rotationSped: 30
-  panningSpeed: 30
   mouseRotationSpeed: 100
   viewingAngle: 60
   tiltAngle: 60
@@ -1169,7 +1168,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   camera: {fileID: 963194230}
-  ClosedTileTemplate: {fileID: 1546859273666413450, guid: 155e3d275f9a81a4b94d0e4b6876c7f7, type: 3}
+  ClosedTileTemplate: {fileID: 8374229652451591, guid: 475c9ac0e1c43b54bafd1a899a8b9117, type: 3}
   GroundTileTemplate: {fileID: 1546859273666413450, guid: 155e3d275f9a81a4b94d0e4b6876c7f7, type: 3}
   WaterTileTemplate: {fileID: 5138706614829363376, guid: fa0ca7fb13872ce4f9042983ffaea756, type: 3}
   CoinTileTemplate: {fileID: 7527705423105074625, guid: 5556e98330d4814468e19e7c24c20232, type: 3}

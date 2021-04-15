@@ -76,8 +76,8 @@ public class MapManager : MonoBehaviour
         float tileXSize = ClosedTileTemplate.transform.localScale.x * 3.2f;
         float tileYSize = ClosedTileTemplate.transform.localScale.y * 3.2f;
 
-        tile.HorizontalIndex = i;
-        tile.VerticalIndex = j;
+        tile.XPos = i;
+        tile.YPos = j;
         tile.SetTransformPosition(new Vector3(tileXSize * i, 0, tileYSize * j));
         Map[i][j] = tile;
         tile.Map = this.Map;
@@ -98,7 +98,7 @@ public class MapManager : MonoBehaviour
 
         PlaceTile(tile, i, j);
         tile.HiddenTile = groundTile;
-        tile.isHidden = false;
+        tile.IsHidden = false;
     }
 
     private void CreateWaterTile(byte i, byte j)

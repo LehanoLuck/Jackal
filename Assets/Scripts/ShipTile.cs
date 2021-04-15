@@ -90,8 +90,8 @@ public class ShipTile : BaseTile, IDragHandler, IBeginDragHandler, IEndDragHandl
                 new ShipMovementData
                 {
                     Id = Id,
-                    XPos = tempTile.HorizontalIndex,
-                    YPos = tempTile.VerticalIndex
+                    XPos = tempTile.XPos,
+                    YPos = tempTile.YPos
                 });
                 this.Replace(tempTile);
             }
@@ -115,22 +115,22 @@ public class ShipTile : BaseTile, IDragHandler, IBeginDragHandler, IEndDragHandl
 
     private bool TryReplace(BaseTile tile)
     {
-        return (Mathf.Abs(HorizontalIndex - tile.HorizontalIndex) < 2 &&
-            Mathf.Abs(VerticalIndex - tile.VerticalIndex) < 2);
+        return (Mathf.Abs(XPos - tile.XPos) < 2 &&
+            Mathf.Abs(YPos - tile.YPos) < 2);
     }
 
     public void Replace(BaseTile tile)
     {
-        byte i = tile.HorizontalIndex;
-        byte j = tile.VerticalIndex;
+        byte i = tile.XPos;
+        byte j = tile.YPos;
 
-        tile.HorizontalIndex = this.HorizontalIndex;
-        tile.VerticalIndex = this.VerticalIndex;
-        Map[this.HorizontalIndex][this.VerticalIndex] = tile;
+        tile.XPos = this.XPos;
+        tile.YPos = this.YPos;
+        Map[this.XPos][this.YPos] = tile;
         Map[i][j] = this;
 
-        this.HorizontalIndex = i;
-        this.VerticalIndex = j;
+        this.XPos = i;
+        this.YPos = j;
 
         var tempPos = this.fixedPosition;
         this.SetTransformPosition(tile.fixedPosition);
@@ -139,10 +139,10 @@ public class ShipTile : BaseTile, IDragHandler, IBeginDragHandler, IEndDragHandl
 
     public void Move(BaseTile tile)
     {
-        this.HorizontalIndex = tile.HorizontalIndex;
-        this.VerticalIndex = tile.VerticalIndex;
+        this.XPos = tile.XPos;
+        this.YPos = tile.YPos;
         this.Map = tile.Map;
-        Map[tile.HorizontalIndex][tile.VerticalIndex] = this;
+        Map[tile.XPos][tile.YPos] = this;
 
         this.SetTransformPosition(tile.fixedPosition);
         Destroy(tile.gameObject);
