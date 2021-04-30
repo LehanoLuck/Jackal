@@ -21,8 +21,8 @@ public class Pirate : SelectableObject, IDragHandler, IBeginDragHandler, IEndDra
     private Vector3 StartPosition;
 
     public Coin SelfCoin { get; set; }
-    public BaseTile CurrentTile { get; set; }
-    private BaseTile TargetTile { get; set; }
+    public Tile CurrentTile { get; set; }
+    private Tile TargetTile { get; set; }
 
     private PhotonView photonView;
 
@@ -122,21 +122,21 @@ public class Pirate : SelectableObject, IDragHandler, IBeginDragHandler, IEndDra
 
         if(TargetTile)
         {
-            return TargetTile.IsCanMoveOnThisTileFromCurrentTile(CurrentTile);
+            return CurrentTile.IsPossibleForMove(TargetTile);
         }
         else
         {
             return false;
         }
 
-        BaseTile GetTargetTile()
+        Tile GetTargetTile()
         {
             var point = eventData.pointerEnter;
             if (point)
             {
-                if (point.GetComponent<BaseTile>())
+                if (point.GetComponent<Tile>())
                 {
-                    return eventData.pointerEnter.GetComponent<BaseTile>();
+                    return eventData.pointerEnter.GetComponent<Tile>();
                 }
                 else if (point.GetComponent<Pirate>())
                 {
@@ -147,20 +147,25 @@ public class Pirate : SelectableObject, IDragHandler, IBeginDragHandler, IEndDra
         }
     }
 
-    private MovementSettings SetMovableOptions(BaseTile targetTile)
+    private MovementSettings SetMovableOptions(Tile targetTile)
     {
         bool isAttack = SetAttackMode(targetTile);
         bool isMoveWithCoin = SetCoinWithMoveMode(isAttack);
         return new MovementSettings(isAttack,isMoveWithCoin);
     }
 
-    private bool  SetAttackMode(BaseTile targetTile)
+    private bool SetAttackMode(Tile targetTile)
     {
-        return targetTile.isHavePirates ? IsFriendlyPirates() : false;
+        if (targetTile is BasicTile)
+        {
+            return ((BasicTile)targetTile).isHavePirates && IsFriendlyPirates();
+        }
+        return false;
+
 
         bool IsFriendlyPirates()
         {
-            var pirate = targetTile.GetPirate();
+            var pirate = ((BasicTile)targetTile).GetPirate();
 
             if (pirate.Ship != this.Ship)
                 return true;
@@ -171,13 +176,18 @@ public class Pirate : SelectableObject, IDragHandler, IBeginDragHandler, IEndDra
 
     private bool SetCoinWithMoveMode(bool isAttack)
     {
-        return CurrentTile.isHaveCoins && SelfPlayer.isMoveWithItem && !isAttack;
+        if(CurrentTile is GroundTile)
+        {
+            return ((GroundTile)CurrentTile).IsHaveCoins && SelfPlayer.isMoveWithItem && !isAttack;
+        }
+        return false;
+
     }
     #endregion
 
     #region MovableActions
 
-    public void MoveOnTile(PirateMovementData data, BaseTile targetTile)
+    public void MoveOnTile(PirateMovementData data, Tile targetTile)
     {
         this.MovementSettings = data.Settings;
         TargetTile = targetTile;
