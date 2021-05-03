@@ -8,7 +8,7 @@ namespace Assets.Scripts
 {
     public class PirateMovementData
     {
-        public MovementSettings Settings { get; set; }
+        public bool IsMoveWithCoin { get; set; }
         public byte Id { get; set; }
         public byte ShipId { get; set; }
         public byte XPos { get; set; }
@@ -21,7 +21,7 @@ namespace Assets.Scripts
             result.XPos = data[1];
             result.YPos = data[2];
             result.ShipId = data[3];
-            result.Settings = new MovementSettings(Convert.ToBoolean(data[4]), Convert.ToBoolean(data[5]));
+            result.IsMoveWithCoin = Convert.ToBoolean(data[4]);
             return result;
         }
 
@@ -34,8 +34,7 @@ namespace Assets.Scripts
                 ship.XPos,
                 ship.YPos,
                 ship.ShipId,
-                Convert.ToByte(ship.Settings.IsAttack),
-                Convert.ToByte(ship.Settings.IsMoveWithCoin),
+                Convert.ToByte(ship.IsMoveWithCoin)
                 };
         }
     }

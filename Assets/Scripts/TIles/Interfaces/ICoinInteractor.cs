@@ -6,11 +6,13 @@ using System.Threading.Tasks;
 
 namespace Assets.Scripts.TIles.Interfaces
 {
-    interface ICoinInteractor
+    public interface ICoinInteractor
     {
         void AddCoin(Coin coin);
 
         Coin PopCoin();
+
+        Coin PeekCoin();
 
         bool IsHaveCoins();
     }

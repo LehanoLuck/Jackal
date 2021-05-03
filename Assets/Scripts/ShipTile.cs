@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class ShipTile : BaseTile, IDragHandler, IBeginDragHandler, IEndDragHandler, IPunInstantiateMagicCallback
+public class ShipTile : BasicTile, IDragHandler, IBeginDragHandler, IEndDragHandler, IPunInstantiateMagicCallback
 {
     private Camera GameCamera;
 
@@ -18,7 +18,7 @@ public class ShipTile : BaseTile, IDragHandler, IBeginDragHandler, IEndDragHandl
     public Pirate PirateTemplate;
 
     public GamePlayer SelfPlayer;
-    private BaseTile tempTile;
+    private BasicTile tempTile;
     public BoxCollider Collider;
     public bool isInFreeSpace = false;
 
@@ -69,9 +69,9 @@ public class ShipTile : BaseTile, IDragHandler, IBeginDragHandler, IEndDragHandl
         }
 
         //Получение временной ячейки, костыль чтобы запомнить ячейку при отпускании пирата
-        if (eventData.pointerEnter && eventData.pointerEnter.GetComponent<BaseTile>())
+        if (eventData.pointerEnter && eventData.pointerEnter.GetComponent<BasicTile>())
         {
-            tempTile = eventData.pointerEnter.GetComponent<BaseTile>();
+            tempTile = eventData.pointerEnter.GetComponent<BasicTile>();
         }
     }
 
@@ -113,13 +113,13 @@ public class ShipTile : BaseTile, IDragHandler, IBeginDragHandler, IEndDragHandl
         }
     }
 
-    private bool TryReplace(BaseTile tile)
+    private bool TryReplace(BasicTile tile)
     {
         return (Mathf.Abs(XPos - tile.XPos) < 2 &&
             Mathf.Abs(YPos - tile.YPos) < 2);
     }
 
-    public void Replace(BaseTile tile)
+    public void Replace(Tile tile)
     {
         byte i = tile.XPos;
         byte j = tile.YPos;
@@ -137,7 +137,7 @@ public class ShipTile : BaseTile, IDragHandler, IBeginDragHandler, IEndDragHandl
         tile.SetTransformPosition(tempPos);
     }
 
-    public void Move(BaseTile tile)
+    public void Move(Tile tile)
     {
         this.XPos = tile.XPos;
         this.YPos = tile.YPos;
@@ -170,13 +170,13 @@ public class ShipTile : BaseTile, IDragHandler, IBeginDragHandler, IEndDragHandl
         base.EnterPirate(pirate);
     }
 
-    public override bool TryAttack(Pirate pirate)
+    public bool TryAttack(Pirate pirate)
     {
         pirate.Die();
         return false;
     }
 
-    public override void AddCoin(Coin coin)
+    public void AddCoin(Coin coin)
     {
         Destroy(coin.gameObject);
         if (photonView.IsMine)

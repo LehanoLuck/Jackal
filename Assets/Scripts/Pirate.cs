@@ -1,4 +1,5 @@
 ﻿using Assets.Scripts;
+using Assets.Scripts.TIles.Interfaces;
 using Photon.Pun;
 using System;
 using System.Collections;
@@ -21,7 +22,7 @@ public class Pirate : SelectableObject, IDragHandler, IBeginDragHandler, IEndDra
     private Vector3 StartPosition;
 
     public Coin SelfCoin { get; set; }
-    public Tile CurrentTile { get; set; }
+    public BasicTile CurrentTile { get; set; }
     private Tile TargetTile { get; set; }
 
     private PhotonView photonView;
@@ -29,8 +30,6 @@ public class Pirate : SelectableObject, IDragHandler, IBeginDragHandler, IEndDra
     public ShipTile Ship;
 
     public GamePlayer SelfPlayer;
-
-    public MovementSettings MovementSettings = new MovementSettings();
 
     public StepByStepSystem StepSystem;
 
@@ -91,7 +90,6 @@ public class Pirate : SelectableObject, IDragHandler, IBeginDragHandler, IEndDra
 
         if (isCanMove)
         {
-             MovementSettings = this.SetMovableOptions(TargetTile);
 
             var pirateMovementData = new PirateMovementData
             {
@@ -99,7 +97,7 @@ public class Pirate : SelectableObject, IDragHandler, IBeginDragHandler, IEndDra
                 ShipId = this.Ship.Id,
                 XPos = TargetTile.XPos,
                 YPos = TargetTile.YPos,
-                Settings = MovementSettings
+                IsMoveWithCoin = IsMoveWithCoin()
             };
 
             StepByStepSystem.StartNextTurn();
@@ -147,49 +145,52 @@ public class Pirate : SelectableObject, IDragHandler, IBeginDragHandler, IEndDra
         }
     }
 
-    private MovementSettings SetMovableOptions(Tile targetTile)
+    public bool IsMoveWithCoin()
     {
-        bool isAttack = SetAttackMode(targetTile);
-        bool isMoveWithCoin = SetCoinWithMoveMode(isAttack);
-        return new MovementSettings(isAttack,isMoveWithCoin);
+        return SelfPlayer.isMoveWithItem && SelfCoin != null;
     }
 
-    private bool SetAttackMode(Tile targetTile)
-    {
-        if (targetTile is BasicTile)
-        {
-            return ((BasicTile)targetTile).isHavePirates && IsFriendlyPirates();
-        }
-        return false;
+    //private MovementSettings SetMovableOptions(Tile targetTile)
+    //{
+    //    bool isMoveWithCoin = SetCoinWithMoveMode(isAttack);
+    //    return new MovementSettings(isMoveWithCoin);
+    //}
+
+    //private bool SetAttackMode(Tile targetTile)
+    //{
+    //    if (targetTile is BasicTile)
+    //    {
+    //        return ((BasicTile)targetTile).isHavePirates && IsFriendlyPirates();
+    //    }
+    //    return false;
 
 
-        bool IsFriendlyPirates()
-        {
-            var pirate = ((BasicTile)targetTile).GetPirate();
+    //    bool IsFriendlyPirates()
+    //    {
+    //        var pirate = ((BasicTile)targetTile).GetPirate();
 
-            if (pirate.Ship != this.Ship)
-                return true;
-            else
-                return false;
-        }
-    }
+    //        if (pirate.Ship != this.Ship)
+    //            return true;
+    //        else
+    //            return false;
+    //    }
+    //}
 
-    private bool SetCoinWithMoveMode(bool isAttack)
-    {
-        if(CurrentTile is GroundTile)
-        {
-            return ((GroundTile)CurrentTile).IsHaveCoins && SelfPlayer.isMoveWithItem && !isAttack;
-        }
-        return false;
+    //private bool SetCoinWithMoveMode(bool isAttack)
+    //{
+    //    if(CurrentTile is GroundTile)
+    //    {
+    //        return ((GroundTile)CurrentTile).IsHaveCoins && SelfPlayer.isMoveWithItem && !isAttack;
+    //    }
+    //    return false;
 
-    }
+    //}
     #endregion
 
     #region MovableActions
 
-    public void MoveOnTile(PirateMovementData data, Tile targetTile)
+    public void MoveOnTile(PirateMovementData data, BasicTile targetTile)
     {
-        this.MovementSettings = data.Settings;
         TargetTile = targetTile;
 
         MoveOnTile();
@@ -201,17 +202,11 @@ public class Pirate : SelectableObject, IDragHandler, IBeginDragHandler, IEndDra
         TargetTile.EnterPirate(this);
     }
 
-    public void TakeCoinFromTile()
-    {
-        this.SelfCoin = CurrentTile.PopCoin();
-    }
-
     public void Die()
     {
         //Заглушка чтобы не уносить с собой при смерти монетки
         //Создаю новый экземпляр класса, чтобы нормально отправить событие в RaiseMovePirateEvent
         //И всю эту кашу нужно разгрести!
-        this.MovementSettings = new MovementSettings { IsAttack = false, IsMoveWithCoin = false };
         this.Ship.EnterPirate(this);
     }
 
@@ -226,42 +221,47 @@ public class Pirate : SelectableObject, IDragHandler, IBeginDragHandler, IEndDra
         SetShip(ship);
         ship.EnterPirate(this);
     }
-}
 
-public class MovementSettings
-{
-    public MovementSettings(bool isAttack, bool isMovewithCoin)
+    public void DropCoin()
     {
-        this.IsAttack = isAttack;
-        this.IsMoveWithCoin = isMovewithCoin;
-    }
-
-    public MovementSettings()
-    {
-        IsAttack = false;
-        IsMoveWithCoin = false;
-    }
-
-    public bool IsAttack { get; set; }
-    public bool IsMoveWithCoin { get; set; }
-
-    public static object Deserialize(byte[] data)
-    {
-        var result = new MovementSettings();
-
-        result.IsAttack = Convert.ToBoolean(data[0]);
-        result.IsMoveWithCoin = Convert.ToBoolean(data[1]);
-        return result;
-    }
-
-    public static byte[] Serialize(object data)
-    {
-        var settings = (MovementSettings)data;
-        return
-            new byte[]
-            {
-                Convert.ToByte(settings.IsAttack),
-                Convert.ToByte(settings.IsMoveWithCoin),
-            };
+        SelfCoin = null;
     }
 }
+
+//public class MovementSettings
+//{
+//    public MovementSettings(bool isAttack, bool isMovewithCoin)
+//    {
+//        this.IsAttack = isAttack;
+//        this.IsMoveWithCoin = isMovewithCoin;
+//    }
+
+//    public MovementSettings()
+//    {
+//        IsAttack = false;
+//        IsMoveWithCoin = false;
+//    }
+
+//    public bool IsAttack { get; set; }
+//    public bool IsMoveWithCoin { get; set; }
+
+//    public static object Deserialize(byte[] data)
+//    {
+//        var result = new MovementSettings();
+
+//        result.IsAttack = Convert.ToBoolean(data[0]);
+//        result.IsMoveWithCoin = Convert.ToBoolean(data[1]);
+//        return result;
+//    }
+
+//    public static byte[] Serialize(object data)
+//    {
+//        var settings = (MovementSettings)data;
+//        return
+//            new byte[]
+//            {
+//                Convert.ToByte(settings.IsAttack),
+//                Convert.ToByte(settings.IsMoveWithCoin),
+//            };
+//    }
+//}

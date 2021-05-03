@@ -6,24 +6,23 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class ClosedTile : Tile, IPirateEnter
+public class ClosedTile : Tile
 {
     public OpenedTile LinkedTile;
 
     public OpenedTile OpenTile()
     {
-        Instantiate(LinkedTile, this.transform.parent);
-        LinkedTile.SetTransformPosition(this.transform.position);
-        LinkedTile.SetMapPosition(this);
-        LinkedTile.DoActionAfterOpenning();
+        var tile = Instantiate(LinkedTile, this.transform.parent);
+        tile.SetMapPosition(this);
+        tile.SetTransformPosition(this.transform.position);
 
         Destroy(gameObject);
-        return LinkedTile;
+        return tile;
     }
 
-    public void EnterPirate(Pirate pirate)
+    public override void EnterPirate(Pirate pirate)
     {
         var tile = OpenTile();
-        tile.EnterPirate(pirate);
+        tile.Open(pirate);
     }
 }

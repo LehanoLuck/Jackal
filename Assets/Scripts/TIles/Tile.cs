@@ -18,12 +18,12 @@ public abstract class Tile : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
     }
 
     #region MapPosition
-    protected Tile[][] Map { get; set; }
+    public Tile[][] Map { get; set; }
     public byte XPos { get; set; }
     public byte YPos { get; set; }
 
-    protected Vector3 fixedPosition;
-    protected Vector3 updatePosition;
+    public Vector3 fixedPosition;
+    public Vector3 updatePosition;
 
     protected internal void SetMapPosition(Tile tile)
     {
@@ -84,6 +84,8 @@ public abstract class Tile : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
         return (targetTile != this &&
                 (Math.Abs(this.XPos - targetTile.XPos) < 2) &&
                 (Math.Abs(this.YPos - targetTile.YPos) < 2) &&
-                !targetTile is WaterTile);
+                !(targetTile is WaterTile));
     }
+
+    public abstract void EnterPirate(Pirate pirate);
 }

@@ -1,18 +1,18 @@
-﻿using System.Collections;
+﻿using Assets.Scripts.TIles.Interfaces;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class Coin : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+    public ICoinInteractor CurrentTile;
+    
+    public void Move(GroundTile tile)
     {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
+        CurrentTile.PopCoin();
+        tile.AddCoin(this);
+        this.CurrentTile = tile;
+        //Исправить, при добавлении анимации
+        this.transform.position = tile.transform.position;
     }
 }

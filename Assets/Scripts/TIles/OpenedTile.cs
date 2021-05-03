@@ -4,13 +4,20 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UnityEngine.Events;
 
 namespace Assets.Scripts.TIles
 {
-    public abstract class OpenedTile: Tile, IPirateEnter
+    public abstract class OpenedTile: BasicTile
     {
-        public abstract void DoActionAfterOpenning();
+        public virtual void DoAction()
+        {
+        }
 
-        public abstract void EnterPirate(Pirate pirate);
+        public virtual void Open(Pirate pirate)
+        {
+            EnterPirate(pirate);
+            DoAction();
+        }
     }
 }

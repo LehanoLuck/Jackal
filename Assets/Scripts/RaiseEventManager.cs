@@ -24,7 +24,6 @@ namespace Assets.Scripts
 
         private const int ShipMovementCode = 1;
         private const int PirateMovementCode = 2;
-        private const int MovementSettingsCode = 3;
 
         private static RaiseEventOptions raiseEventOptions = new RaiseEventOptions { Receivers = ReceiverGroup.All };
         private static RaiseEventOptions raiseEventOptionsForOther = new RaiseEventOptions { Receivers = ReceiverGroup.Others };
@@ -38,7 +37,6 @@ namespace Assets.Scripts
                 PhotonNetwork.AddCallbackTarget(EventManager);
 
                 PhotonPeer.RegisterType(typeof(ShipMovementData), ShipMovementCode, ShipMovementData.Serialize, ShipMovementData.Deserialize);
-                PhotonPeer.RegisterType(typeof(MovementSettings), MovementSettingsCode, MovementSettings.Serialize, MovementSettings.Deserialize);
                 PhotonPeer.RegisterType(typeof(PirateMovementData), PirateMovementCode, PirateMovementData.Serialize, PirateMovementData.Deserialize);
             }
         }
@@ -100,7 +98,7 @@ namespace Assets.Scripts
                     ship = EventMapManager.ShipTiles[pirateMovementData.ShipId];
                     var pirate = ship.ShipPirates[pirateMovementData.Id];
                     tile = EventMapManager.Map[pirateMovementData.XPos][pirateMovementData.YPos];
-                    pirate.MoveOnTile(pirateMovementData, tile);
+                    pirate.MoveOnTile(pirateMovementData, (BasicTile)tile);
                     break;
                 case SetNewQueuePlayersEvent:
                     var actorNumbers = (int[])photonEvent.CustomData;

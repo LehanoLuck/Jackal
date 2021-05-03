@@ -6,10 +6,13 @@ using System.Threading.Tasks;
 
 namespace Assets.Scripts.TIles.Interfaces
 {
-    interface IPirateInteractor: IPirateEnter
+    interface IPirateInteractor
     {
+        void EnterPirate(Pirate pirate);
         void LeavePirate(Pirate pirate);
         void LeaveAllPirates();
-        Pirate GetPirate();
+        void TryAttack(Pirate pirate);
+        void AddPirate(Pirate pirate);
+
     }
 }

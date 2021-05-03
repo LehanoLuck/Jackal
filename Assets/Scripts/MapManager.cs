@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Assets.Scripts;
+using Assets.Scripts.TIles;
 using Photon.Pun;
 using UnityEngine;
 using UnityEngine.UI;
@@ -10,7 +11,7 @@ public class MapManager : MonoBehaviour
 {
     public CameraMovement camera;
     public int[][] GenerationMapMatrix;
-    public GroundTile ClosedTileTemplate;
+    public ClosedTile ClosedTileTemplate;
     public GroundTile GroundTileTemplate;
     public WaterTile WaterTileTemplate;
     public CoinTile CoinTileTemplate;
@@ -18,7 +19,7 @@ public class MapManager : MonoBehaviour
 
     public Dictionary<int, ShipTile> ShipTiles = new Dictionary<int, ShipTile>();
 
-    public BaseTile[][] Map;
+    public Tile[][] Map;
     private Hashtable TilesTable;
     public List<ShipTile> ships = new List<ShipTile>();
     public Text Log;
@@ -39,10 +40,10 @@ public class MapManager : MonoBehaviour
 
     public void GenerateMap()
     {
-        this.Map = new BaseTile[GenerationMapMatrix.Length][];
+        this.Map = new Tile[GenerationMapMatrix.Length][];
         for (byte i = 0; i < GenerationMapMatrix.Length; i++)
         {
-            Map[i] = new BaseTile[GenerationMapMatrix[i].Length];
+            Map[i] = new Tile[GenerationMapMatrix[i].Length];
             for (byte j = 0; j < GenerationMapMatrix[i].Length; j++)
             {
                 CreateTile(i, j);
@@ -71,7 +72,7 @@ public class MapManager : MonoBehaviour
         camera.mapSize = Mathf.Max(length, width);
     }
 
-    private void PlaceTile(BaseTile tile, byte i, byte j)
+    private void PlaceTile(Tile tile, byte i, byte j)
     {
         float tileXSize = ClosedTileTemplate.transform.localScale.x * 3.2f;
         float tileYSize = ClosedTileTemplate.transform.localScale.y * 3.2f;
@@ -86,19 +87,18 @@ public class MapManager : MonoBehaviour
     private void CreateTile(byte i, byte j)
     {
         var tile = TilesTable[GenerationMapMatrix[i][j]];
-        if (tile is GroundTile)
-            CreateGroundTile(i, j, tile as GroundTile);
+        if (tile is OpenedTile)
+            CreateGroundTile(i, j, tile as OpenedTile);
         else
             CreateWaterTile(i, j);
     }
 
-    private void CreateGroundTile(byte i, byte j, GroundTile groundTile)
+    private void CreateGroundTile(byte i, byte j, OpenedTile linkedTile)
     {
-        GroundTile tile = Instantiate(ClosedTileTemplate, this.transform);
+        ClosedTile tile = Instantiate(ClosedTileTemplate, this.transform);
 
         PlaceTile(tile, i, j);
-        tile.HiddenTile = groundTile;
-        tile.IsHidden = false;
+        tile.LinkedTile = linkedTile;
     }
 
     private void CreateWaterTile(byte i, byte j)
