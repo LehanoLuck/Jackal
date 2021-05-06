@@ -33,6 +33,8 @@ public class Pirate : SelectableObject, IDragHandler, IBeginDragHandler, IEndDra
 
     public StepByStepSystem StepSystem;
 
+    public TrajectoryMovement trajectoryMovement;
+
     private bool isMyTurn => (bool)PhotonNetwork.LocalPlayer.CustomProperties["IsMyTurn"];
 
     void Start()
@@ -63,9 +65,11 @@ public class Pirate : SelectableObject, IDragHandler, IBeginDragHandler, IEndDra
         if (groundPlane.Raycast(ray, out float position))
         {
             Vector3 worldPosition = ray.GetPoint(position);
-            worldPosition.y += 1.5f;
+            //worldPosition.y += 1.5f;
 
-            transform.position = worldPosition;
+            //transform.position = worldPosition;
+
+            trajectoryMovement.ShowTrajectory(worldPosition);
         }
     }
 
@@ -108,6 +112,8 @@ public class Pirate : SelectableObject, IDragHandler, IBeginDragHandler, IEndDra
         {
             transform.position = this.StartPosition;
         }
+
+        this.trajectoryMovement.HideTrajectory();
     }
 
     #endregion

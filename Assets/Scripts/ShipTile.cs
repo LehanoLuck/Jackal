@@ -68,7 +68,7 @@ public class ShipTile : BasicTile, IDragHandler, IBeginDragHandler, IEndDragHand
             PlacePirateOnTile();
         }
 
-        //Получение временной ячейки, костыль чтобы запомнить ячейку при отпускании пирата
+        //Получение временной ячейки, костыль чтобы запомнить ячейку при отпускании корабля
         if (eventData.pointerEnter && eventData.pointerEnter.GetComponent<BasicTile>())
         {
             tempTile = eventData.pointerEnter.GetComponent<BasicTile>();
