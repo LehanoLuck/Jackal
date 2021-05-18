@@ -131,7 +131,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   MoveCoinsButtonTemplate: {fileID: 1007654870425815615, guid: 70bd70bfa1bec4540918fad3822a3abc, type: 3}
-  Collider: {fileID: 9071483994512023151}
+  Collider: {fileID: 0}
   Ship: {fileID: 0}
   SelfPlayer: {fileID: 0}
   StepSystem: {fileID: 0}

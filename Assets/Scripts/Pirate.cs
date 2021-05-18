@@ -16,18 +16,14 @@ public class Pirate : SelectableObject, IDragHandler, IBeginDragHandler, IEndDra
     public GameObject MoveCoinsButtonTemplate;
 
     private Camera GameCamera;
-
     public MeshCollider Collider;
-
-    private Vector3 StartPosition;
-
     public Coin SelfCoin { get; set; }
     public BasicTile CurrentTile { get; set; }
     private Tile TargetTile { get; set; }
 
     private PhotonView photonView;
 
-    public ShipTile Ship;
+    public Ship Ship;
 
     public GamePlayer SelfPlayer;
 
@@ -40,15 +36,9 @@ public class Pirate : SelectableObject, IDragHandler, IBeginDragHandler, IEndDra
     void Start()
     {
         GameCamera = Camera.main;
-        Collider = GetComponent<MeshCollider>();
 
         photonView = GetComponent<PhotonView>();
-    }
-
-    public void SetShip(ShipTile ship)
-    {
-        this.Ship = ship;
-        ship.ShipPirates.Add(this);
+        Collider = GetComponent<MeshCollider>();
     }
 
     #region DragEvents
@@ -65,9 +55,6 @@ public class Pirate : SelectableObject, IDragHandler, IBeginDragHandler, IEndDra
         if (groundPlane.Raycast(ray, out float position))
         {
             Vector3 worldPosition = ray.GetPoint(position);
-            //worldPosition.y += 1.5f;
-
-            //transform.position = worldPosition;
 
             trajectoryMovement.ShowTrajectory(worldPosition);
         }
@@ -78,8 +65,6 @@ public class Pirate : SelectableObject, IDragHandler, IBeginDragHandler, IEndDra
         if (!photonView.IsMine || !isMyTurn)
             return;
 
-        Collider.enabled = false;
-        StartPosition = this.transform.position;
         CurrentTile.ShowAvailableForMoveCells();
     }
 
@@ -88,7 +73,6 @@ public class Pirate : SelectableObject, IDragHandler, IBeginDragHandler, IEndDra
         if (!photonView.IsMine || !isMyTurn)
             return;
 
-        Collider.enabled = true;
         CurrentTile.HideAvailableForMoveCells();
         var isCanMove = IsCanMoveOnTile(eventData);
 
@@ -104,13 +88,10 @@ public class Pirate : SelectableObject, IDragHandler, IBeginDragHandler, IEndDra
                 IsMoveWithCoin = IsMoveWithCoin()
             };
 
-            StepByStepSystem.StartNextTurn();
             RaiseEventManager.RaiseMovePirateEvent(pirateMovementData);
             MoveOnTile();
-        }
-        else
-        {
-            transform.position = this.StartPosition;
+
+            StepByStepSystem.StartNextTurn();
         }
 
         this.trajectoryMovement.HideTrajectory();
@@ -195,7 +176,7 @@ public class Pirate : SelectableObject, IDragHandler, IBeginDragHandler, IEndDra
 
     #region MovableActions
 
-    public void MoveOnTile(PirateMovementData data, BasicTile targetTile)
+    public void MoveOnTile(PirateMovementData data, Tile targetTile)
     {
         TargetTile = targetTile;
 
@@ -210,10 +191,7 @@ public class Pirate : SelectableObject, IDragHandler, IBeginDragHandler, IEndDra
 
     public void Die()
     {
-        //Заглушка чтобы не уносить с собой при смерти монетки
-        //Создаю новый экземпляр класса, чтобы нормально отправить событие в RaiseMovePirateEvent
-        //И всю эту кашу нужно разгрести!
-        this.Ship.EnterPirate(this);
+        this.Ship.CurrentTile.EnterPirate(this);
     }
 
     #endregion
@@ -223,9 +201,11 @@ public class Pirate : SelectableObject, IDragHandler, IBeginDragHandler, IEndDra
         var data = info.photonView.InstantiationData;
         this.Id = (byte)data[0];
         var mapManager = FindObjectOfType<MapManager>();
-        var ship = mapManager.ShipTiles[(byte)data[1]];
-        SetShip(ship);
-        ship.EnterPirate(this);
+        var ship = mapManager.ShipsDictionary[(byte)data[1]];
+        Ship = ship;
+        SelfPlayer = ship.SelfPlayer;
+        ship.CurrentTile.EnterPirate(this);
+        ship.ShipPirates.Add(Id, this);
     }
 
     public void DropCoin()

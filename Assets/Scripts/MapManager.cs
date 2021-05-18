@@ -15,13 +15,13 @@ public class MapManager : MonoBehaviour
     public GroundTile GroundTileTemplate;
     public WaterTile WaterTileTemplate;
     public CoinTile CoinTileTemplate;
-    public ShipTile ShipTileTemplate;
+    //public ShipTile ShipTileTemplate;
 
-    public Dictionary<int, ShipTile> ShipTiles = new Dictionary<int, ShipTile>();
+    public Dictionary<int, Ship> ShipsDictionary = new Dictionary<int, Ship>();
 
     public Tile[][] Map;
     private Hashtable TilesTable;
-    public List<ShipTile> ships = new List<ShipTile>();
+    public List<Ship> Ships = new List<Ship>();
     public Text Log;
         
     void Start()
@@ -107,10 +107,10 @@ public class MapManager : MonoBehaviour
         PlaceTile(tile, i, j);
     }
 
-    public void AddShipTile(ShipTile ship)
+    public void AddShip(Ship ship)
     {
-        byte id = (byte)ShipTiles.Count;
-        ShipTiles.Add(id, ship);
+        byte id = (byte)ShipsDictionary.Count;
+        ShipsDictionary.Add(id, ship);
         ship.Id = id;
     }
 

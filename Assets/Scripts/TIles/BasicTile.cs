@@ -6,8 +6,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
-public abstract class BasicTile: Tile, IPirateInteractor
+public abstract class BasicTile: Tile, IPirateInteractor,IPointerDownHandler
 {
     public List<Pirate> Pirates { get; set; } = new List<Pirate>();
     public int MaxPirateSize = 5;
@@ -21,6 +22,8 @@ public abstract class BasicTile: Tile, IPirateInteractor
             this.TryAttack(pirate);
         }
         this.AddPirate(pirate);
+        this.ShipId = pirate.Ship.Id;
+
         PlacePirateOnTile();
     }
 
@@ -49,7 +52,6 @@ public abstract class BasicTile: Tile, IPirateInteractor
         if (ShipId != pirate.Ship.Id)
         {
             KillAllPirates();
-            this.ShipId = pirate.Ship.Id;
 
             if (pirate.IsMoveWithCoin())
                 pirate.DropCoin();
@@ -62,7 +64,7 @@ public abstract class BasicTile: Tile, IPirateInteractor
         this.Pirates.Add(pirate);
     }
 
-    public void PlacePirateOnTile()
+    public virtual void PlacePirateOnTile()
     {
         int count = Pirates.Count;
 
@@ -82,6 +84,38 @@ public abstract class BasicTile: Tile, IPirateInteractor
             float z = this.transform.position.z + radius * Mathf.Cos(value);
 
             Pirates[i].transform.position = new Vector3(x, this.transform.position.y - 1.25f, z);
+        }
+    }
+
+    public override void OnPointerEnter(PointerEventData eventData)
+    {
+        if(eventData.pointerDrag && eventData.pointerDrag.GetComponent<Pirate>())
+        {
+            foreach (var pirate in Pirates)
+            {
+                pirate.Collider.enabled = false;
+            }
+        }
+        else
+        {
+            foreach (var pirate in Pirates)
+            {
+                pirate.Collider.enabled = true;
+            }
+        }
+        base.OnPointerEnter(eventData);
+    }
+
+    public override void OnPointerExit(PointerEventData eventData)
+    {
+        base.OnPointerExit(eventData);
+    }
+
+    public virtual void OnPointerDown(PointerEventData eventData)
+    {
+        foreach (var pirate in Pirates)
+        {
+            pirate.Collider.enabled = true;
         }
     }
 }

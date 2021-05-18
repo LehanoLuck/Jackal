@@ -17,7 +17,7 @@ namespace Assets.Scripts
 
         private const int StartGameEvent = 1;
         private const int MoveShipEvent = 2;
-        private const int ReplaceShipEvent = 3;
+        private const int CreateShipEvent = 3;
         private const int MovePirateEvent = 4;
         private const int SetNewQueuePlayersEvent = 5;
         private const int EndGameEvent = 6;
@@ -50,12 +50,12 @@ namespace Assets.Scripts
 
         public static void RaiseMoveShipEvent(ShipMovementData shipMovementData)
         {
-            PhotonNetwork.RaiseEvent(MoveShipEvent, shipMovementData, raiseEventOptions, sendOptions);
+            PhotonNetwork.RaiseEvent(MoveShipEvent, shipMovementData, raiseEventOptionsForOther, sendOptions);
         }
 
-        public static void RaiseReplaceShipEvent(ShipMovementData shipMovementData)
+        public static void RaiseCreateShipEvent(ShipMovementData shipMovementData)
         {
-            PhotonNetwork.RaiseEvent(ReplaceShipEvent, shipMovementData, raiseEventOptionsForOther, sendOptions);
+            PhotonNetwork.RaiseEvent(CreateShipEvent, shipMovementData, raiseEventOptions, sendOptions);
         }
 
         public static void RaiseMovePirateEvent(PirateMovementData pirateMovementData)
@@ -83,22 +83,22 @@ namespace Assets.Scripts
                     break;
                 case MoveShipEvent:
                     var shipMovementData = (ShipMovementData)photonEvent.CustomData;
-                    var ship = EventMapManager.ShipTiles[shipMovementData.Id];
+                    var ship = EventMapManager.ShipsDictionary[shipMovementData.Id];
                     var tile = EventMapManager.Map[shipMovementData.XPos][shipMovementData.YPos];
-                    ship.Move(tile);
+                    ship.MoveOnTile(tile);
                     break;
-                case ReplaceShipEvent:
+                case CreateShipEvent:
                     shipMovementData = (ShipMovementData)photonEvent.CustomData;
-                    ship = EventMapManager.ShipTiles[shipMovementData.Id];
+                    ship = EventMapManager.ShipsDictionary[shipMovementData.Id];
                     tile = EventMapManager.Map[shipMovementData.XPos][shipMovementData.YPos];
-                    ship.Replace(tile);
+                    ship.CreateShip(tile);
                     break;
                 case MovePirateEvent:
                     var pirateMovementData = (PirateMovementData)photonEvent.CustomData;
-                    ship = EventMapManager.ShipTiles[pirateMovementData.ShipId];
+                    ship = EventMapManager.ShipsDictionary[pirateMovementData.ShipId];
                     var pirate = ship.ShipPirates[pirateMovementData.Id];
                     tile = EventMapManager.Map[pirateMovementData.XPos][pirateMovementData.YPos];
-                    pirate.MoveOnTile(pirateMovementData, (BasicTile)tile);
+                    pirate.MoveOnTile(pirateMovementData, tile);
                     break;
                 case SetNewQueuePlayersEvent:
                     var actorNumbers = (int[])photonEvent.CustomData;

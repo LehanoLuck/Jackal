@@ -10,8 +10,8 @@ using UnityEngine.UI;
 
 public class ShipManager : MonoBehaviour
 {
-    public ShipTile ShipTileTemplate;
-    private ShipTile placingShip;
+    public Ship ShipTemplate;
+    private Ship placingShip;
     private Camera GameCamera;
     public MapManager mapManager;
     public Button CreateShipButton;
@@ -25,11 +25,11 @@ public class ShipManager : MonoBehaviour
                 Destroy(placingShip.gameObject);
             }
 
-            byte id = (byte)mapManager.ShipTiles.Count;
-            var ship = PhotonNetwork.Instantiate(ShipTileTemplate.name, Input.mousePosition, Quaternion.identity, 0, new object[] { id });
+            byte id = (byte)mapManager.ShipsDictionary.Count;
+            var ship = PhotonNetwork.Instantiate(ShipTemplate.name, Input.mousePosition, Quaternion.identity, 0, new object[] { id });
 
             StepByStepSystem.StartNextTurn();
-            placingShip = ship.GetComponent<ShipTile>();
+            placingShip = ship.GetComponent<Ship>();
         }
     }
 
@@ -45,6 +45,8 @@ public class ShipManager : MonoBehaviour
         {
             var groundPlane = new Plane(Vector3.up, Vector3.zero);
 
+            var collider = placingShip.GetComponent<BoxCollider>();
+            collider.enabled = false;
             Ray ray = GameCamera.ScreenPointToRay(Input.mousePosition);
 
             if (groundPlane.Raycast(ray, out float position))
@@ -63,11 +65,12 @@ public class ShipManager : MonoBehaviour
                         if (obj.GetComponent<WaterTile>())
                         {
                             var tile = obj.GetComponent<WaterTile>();
-                            RaiseEventManager.RaiseMoveShipEvent(new ShipMovementData 
+                            RaiseEventManager.RaiseCreateShipEvent(new ShipMovementData 
                             { Id = placingShip.Id, 
                                 XPos = tile.XPos, 
                                 YPos = tile.YPos 
                             });
+                            collider.enabled = true;
                             placingShip = null;
 
                             CreateShipButton.gameObject.SetActive(false);

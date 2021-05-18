@@ -374,7 +374,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 650149abb06c3db4a8bf5f9a74c35778, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ShipTileTemplate: {fileID: 4190543239590579343, guid: 3363998fc00907a43af76f4e1a920de2, type: 3}
+  ShipTemplate: {fileID: 3158282283223904649, guid: 3e424563d95026a48b08d2bf27813971, type: 3}
   mapManager: {fileID: 1243165923}
   CreateShipButton: {fileID: 132979359}
 --- !u!114 &94337221
@@ -1176,8 +1176,7 @@ MonoBehaviour:
   GroundTileTemplate: {fileID: 1546859273666413450, guid: 155e3d275f9a81a4b94d0e4b6876c7f7, type: 3}
   WaterTileTemplate: {fileID: 5138706614829363376, guid: fa0ca7fb13872ce4f9042983ffaea756, type: 3}
   CoinTileTemplate: {fileID: 7527705423105074625, guid: 5556e98330d4814468e19e7c24c20232, type: 3}
-  ShipTileTemplate: {fileID: 4190543239590579343, guid: 3363998fc00907a43af76f4e1a920de2, type: 3}
-  ships: []
+  Ships: []
   Log: {fileID: 1877574010}
 --- !u!4 &1243165924
 Transform:

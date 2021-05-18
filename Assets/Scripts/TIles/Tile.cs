@@ -42,12 +42,12 @@ public abstract class Tile : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
     #endregion
 
     #region PointerEvents
-    public void OnPointerEnter(PointerEventData eventData)
+    public virtual void OnPointerEnter(PointerEventData eventData)
     {
         this.transform.position = updatePosition;
     }
 
-    public void OnPointerExit(PointerEventData eventData)
+    public virtual void OnPointerExit(PointerEventData eventData)
     {
         this.transform.position = fixedPosition;
     }
@@ -75,17 +75,28 @@ public abstract class Tile : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
 
     protected virtual IEnumerable<Tile> GetPossibleTiles()
     {
-        var tiles = Map.SelectMany(g => g.ToArray()).Where(t => IsPossibleForMove(t)).ToList();
+        var tiles = Map.SelectMany(g => g.ToArray()).Where(t => IsPossibleForMove(t));
         return tiles;
     }
 
-    public bool IsPossibleForMove(Tile targetTile)
+    public virtual bool IsPossibleForMove(Tile targetTile)
     {
         return (targetTile != this &&
                 (Math.Abs(this.XPos - targetTile.XPos) < 2) &&
                 (Math.Abs(this.YPos - targetTile.YPos) < 2) &&
-                !(targetTile is WaterTile));
+                IsCanMoveOnWaterTile(targetTile));
     }
 
+    protected bool IsCanMoveOnWaterTile(Tile targetTile)
+    {
+        if(!(targetTile is WaterTile))
+        {
+            return true;
+        }
+        else
+        {
+            return ((WaterTile)targetTile).PirateShip != null;
+        }
+    }
     public abstract void EnterPirate(Pirate pirate);
 }
