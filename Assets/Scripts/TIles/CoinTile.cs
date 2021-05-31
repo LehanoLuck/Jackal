@@ -16,12 +16,6 @@ public class CoinTile : GroundTile
         coin.CurrentTile = this;
     }
 
-    public override void EnterPirate(Pirate pirate)
-    {
-        base.EnterPirate(pirate);
-        pirate.SelfCoin = this.PeekCoin();
-    }
-
     public override void Open(Pirate pirate)
     {
         DoAction();

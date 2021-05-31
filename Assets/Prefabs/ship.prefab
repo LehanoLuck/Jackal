@@ -1,5 +1,21 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!114 &8981142893543551955
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 383667377856954749}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d7bf36ce55b92654b947c7bb22a87d76, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fixedPosition: {x: 0, y: 0, z: 0}
+  updatePosition: {x: 0, y: 0, z: 0}
+  MaxPirateSize: 5
+  ShipId: 0
 --- !u!1001 &1884983508063726050
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -7,6 +23,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1454681772485390885, guid: 4184f0e4632b8ff4ba10f26fa77a25fa, type: 3}
+      propertyPath: m_RootOrder
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1454681772485390885, guid: 4184f0e4632b8ff4ba10f26fa77a25fa, type: 3}
       propertyPath: m_LocalPosition.x
       value: -5.948345
@@ -20,6 +40,10 @@ PrefabInstance:
       value: -10.10501
       objectReference: {fileID: 0}
     - target: {fileID: 1454681772485390885, guid: 4184f0e4632b8ff4ba10f26fa77a25fa, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1454681772485390885, guid: 4184f0e4632b8ff4ba10f26fa77a25fa, type: 3}
       propertyPath: m_LocalRotation.x
       value: 0
       objectReference: {fileID: 0}
@@ -30,14 +54,6 @@ PrefabInstance:
     - target: {fileID: 1454681772485390885, guid: 4184f0e4632b8ff4ba10f26fa77a25fa, type: 3}
       propertyPath: m_LocalRotation.z
       value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1454681772485390885, guid: 4184f0e4632b8ff4ba10f26fa77a25fa, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1454681772485390885, guid: 4184f0e4632b8ff4ba10f26fa77a25fa, type: 3}
-      propertyPath: m_RootOrder
-      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1454681772485390885, guid: 4184f0e4632b8ff4ba10f26fa77a25fa, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -55,5 +71,17 @@ PrefabInstance:
       propertyPath: m_Name
       value: ship
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    - target: {fileID: 5126162216448694079, guid: 4184f0e4632b8ff4ba10f26fa77a25fa, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    m_RemovedComponents:
+    - {fileID: 2310067731483698541, guid: 4184f0e4632b8ff4ba10f26fa77a25fa, type: 3}
+    - {fileID: 5768106552750929667, guid: 4184f0e4632b8ff4ba10f26fa77a25fa, type: 3}
+    - {fileID: 6899627797330958879, guid: 4184f0e4632b8ff4ba10f26fa77a25fa, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 4184f0e4632b8ff4ba10f26fa77a25fa, type: 3}
+--- !u!1 &383667377856954749 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2268620082379384991, guid: 4184f0e4632b8ff4ba10f26fa77a25fa, type: 3}
+  m_PrefabInstance: {fileID: 1884983508063726050}
+  m_PrefabAsset: {fileID: 0}

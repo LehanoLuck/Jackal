@@ -90,8 +90,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6233858336539243942}
-  - component: {fileID: 5839379113604420177}
   - component: {fileID: 5839379113604420176}
+  - component: {fileID: 5839379113604420177}
   - component: {fileID: 5839379113604420179}
   m_Layer: 0
   m_Name: swamp
@@ -108,13 +108,29 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6757877243847323420}
   m_LocalRotation: {x: 0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 20.716667, y: 6.837639, z: 1.0826945}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 6841857417383920894}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &5839379113604420176
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6757877243847323420}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 37b31704cd8894343ae37e1c0ca34cca, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fixedPosition: {x: 0, y: 0, z: 0}
+  updatePosition: {x: 0, y: 0, z: 0}
+  MaxPirateSize: 5
+  ShipId: 0
 --- !u!65 &5839379113604420177
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -128,21 +144,6 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 3.2, y: 0.6, z: 3.2}
   m_Center: {x: 0, y: -0.95, z: 0}
---- !u!114 &5839379113604420176
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6757877243847323420}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 37b31704cd8894343ae37e1c0ca34cca, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  HiddenTile: {fileID: 0}
-  maxSize: 5
-  isHidden: 1
 --- !u!222 &5839379113604420179
 CanvasRenderer:
   m_ObjectHideFlags: 0

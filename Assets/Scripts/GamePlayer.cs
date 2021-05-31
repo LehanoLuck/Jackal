@@ -1,17 +1,35 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using Photon.Pun;
+using Photon.Realtime;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class GamePlayer : MonoBehaviour
 {
-    public Pirate CurrentPirate;
+    public int CoinsCount;
+    public int PiratesCount = 3;
 
-    public PirateUI PirateUI;
+    public Text CoinText;
+    public Text PirateText;
+    public Text PlayerNameText;
 
-    public PlayerUI PlayerUI;
+    public void AddCoins()
+    {
+        CoinsCount++;
+        CoinText.text = CoinsCount.ToString();
+    }
 
-    public GameObject ShipUI;
+    public void ChangePiratesCount(int value)
+    {
+        PiratesCount += value;
+        PirateText.text = PiratesCount.ToString();
+    }
 
-    public bool isMoveWithItem = false;
+    public void SetPlayerName(int id)
+    {
+        var player = PhotonNetwork.PlayerListOthers.FirstOrDefault(p => p.ActorNumber == id);
+        PlayerNameText.text = player.NickName;
+    }
 }

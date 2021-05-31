@@ -83,9 +83,11 @@ public abstract class BasicTile: Tile, IPirateInteractor,IPointerDownHandler
             float x = this.transform.position.x + radius * Mathf.Sin(value);
             float z = this.transform.position.z + radius * Mathf.Cos(value);
 
-            Pirates[i].transform.position = new Vector3(x, this.transform.position.y - 1.25f, z);
+            Pirates[i].transform.position = new Vector3(x, this.transform.position.y, z);
         }
     }
+
+    public abstract void AddCoin(Coin coin);
 
     public override void OnPointerEnter(PointerEventData eventData)
     {

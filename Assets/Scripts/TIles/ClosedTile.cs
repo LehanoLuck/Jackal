@@ -14,7 +14,7 @@ public class ClosedTile : Tile
     {
         var tile = Instantiate(LinkedTile, this.transform.parent);
         tile.SetMapPosition(this);
-        tile.SetTransformPosition(this.transform.position);
+        tile.SetTransformPosition(this.fixedPosition);
 
         Destroy(gameObject);
         return tile;
