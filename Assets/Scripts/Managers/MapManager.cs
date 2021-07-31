@@ -25,6 +25,8 @@ public class MapManager : MonoBehaviour
     private Hashtable TilesTable;
     public List<Ship> Ships = new List<Ship>();
     public Text Log;
+    public Text TurnMessage;
+    public int CoinsLeft;
         
     void Start()
     {
@@ -38,8 +40,8 @@ public class MapManager : MonoBehaviour
 
         GenerationMapMatrix = MapMatrixManager.GenerationMapMatrix;
         GenerateMap();
-
-        Log.text = $"Coins left - {MapMatrixManager.CoinsCount}";
+        CoinsLeft = MapMatrixManager.CoinsCount;
+        Log.text = $"Coins left - {CoinsLeft}";
         RaiseEventManager.EventMapManager = this;
     }
 
@@ -155,5 +157,28 @@ public class MapManager : MonoBehaviour
 
         var controller = FindObjectOfType<ConnectionController>();
         controller.LeaveRoom();
+    }
+
+    public void ShowCurrentTurn(int actorNumber)
+    {
+        StartCoroutine(ShowCurrentPlayer(actorNumber));
+    }
+
+    private IEnumerator ShowCurrentPlayer(int actorNumber)
+    {
+        var player = PhotonNetwork.CurrentRoom.Players.Values.FirstOrDefault(p => p.ActorNumber == actorNumber);
+        if (PhotonNetwork.LocalPlayer.ActorNumber == player.ActorNumber)
+        {
+            TurnMessage.text = "Ваш ход!";
+        }
+        else
+        {
+            TurnMessage.text = $"Ходит - {player.NickName}";
+        }
+
+        TurnMessage.gameObject.SetActive(true);
+
+        yield return new WaitForSeconds(2);
+        TurnMessage.gameObject.SetActive(false);
     }
 }

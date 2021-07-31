@@ -2,10 +2,12 @@
 using Photon.Pun;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.Rendering;
 using UnityEngine;
 using UnityEngine.UI;
 using Hashtable = ExitGames.Client.Photon.Hashtable;
 
+[ExecuteInEditMode]
 public class PlayerInfo : MonoBehaviour, IPunObservable, IPunInstantiateMagicCallback
 {
     public PhotonView photonView;
@@ -18,6 +20,10 @@ public class PlayerInfo : MonoBehaviour, IPunObservable, IPunInstantiateMagicCal
 
     private Hashtable customProperties;
 
+    private float sideRatio;
+
+    private RectTransform rectTransform;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -25,6 +31,14 @@ public class PlayerInfo : MonoBehaviour, IPunObservable, IPunInstantiateMagicCal
         {
             toggleReady.enabled = false;
         }
+
+        rectTransform = GetComponent<RectTransform>();
+    }
+
+    
+    void Update()
+    {
+        rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, rectTransform.rect.height * 100 / 130);
     }
 
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)

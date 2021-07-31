@@ -22,7 +22,6 @@ public class LobbyManager : MonoBehaviourPunCallbacks
         PhotonNetwork.ConnectUsingSettings();
 
         RaiseEventManager.ActivateCallbacks();
-        //PhotonNetwork.ConnectToRegion("ru");
     }
 
     private void Log(string message)

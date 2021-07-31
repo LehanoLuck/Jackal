@@ -12,7 +12,6 @@ public class Coin : MonoBehaviour
         CurrentTile.PopCoin();
         this.CurrentTile = tile;
         tile.AddCoin(this);
-        //Исправить, при добавлении анимации
         this.transform.position = tile.transform.position;
     }
 }

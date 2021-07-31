@@ -28,7 +28,6 @@ public class ShipManager : MonoBehaviour
             byte id = (byte)mapManager.ShipsDictionary.Count;
             var ship = PhotonNetwork.Instantiate(ShipTemplate.name, Input.mousePosition, Quaternion.identity, 0, new object[] { id });
 
-            StepByStepSystem.StartNextTurn();
             placingShip = ship.GetComponent<Ship>();
         }
     }
@@ -74,6 +73,7 @@ public class ShipManager : MonoBehaviour
                             placingShip = null;
 
                             CreateShipButton.gameObject.SetActive(false);
+                            StepByStepSystem.StartNextTurn();
                         }
                     }
                 }

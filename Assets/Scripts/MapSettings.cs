@@ -21,11 +21,11 @@ namespace Assets.Scripts
         public MapSettings()
         {
             TilesCategoryTable = new Hashtable();
-            TilesCategoryTable.Add(TilesCategory.Ground, 10);
-            TilesCategoryTable.Add(TilesCategory.Coin, 15);
-            TilesCategoryTable.Add(TilesCategory.Arrow, 25);
-            TilesCategoryTable.Add(TilesCategory.Ice,12);
-            TilesCategoryTable.Add(TilesCategory.Cave,8);
+            TilesCategoryTable.Add(TilesCategory.Ground, 3);
+            TilesCategoryTable.Add(TilesCategory.Coin, 1);
+            TilesCategoryTable.Add(TilesCategory.Arrow, 0);
+            TilesCategoryTable.Add(TilesCategory.Ice,0);
+            TilesCategoryTable.Add(TilesCategory.Cave,0);
         }
 
         public MapSettings(int width, int length, int coins, int ground)
@@ -49,8 +49,8 @@ namespace Assets.Scripts
         public int TopWaterSide = 2;
         public int BottomWaterSide = 2;
 
-        public int GroundWidth = 8;
-        public int GroundLength = 8;
+        public int GroundWidth = 2;
+        public int GroundLength = 2;
 
         public int MapWidth => GroundWidth + LeftWaterSide + RightWaterSide;
         public int MapLength => GroundLength + TopWaterSide + BottomWaterSide;

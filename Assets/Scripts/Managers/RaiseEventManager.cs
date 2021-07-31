@@ -65,6 +65,10 @@ namespace Assets.Scripts
 
         public static void RaiseSetNewQueuePlayersEvent(int[] actorNumbers)
         {
+            if (EventMapManager != null)
+            {
+                EventMapManager.ShowCurrentTurn(actorNumbers[0]);
+            }
             PhotonNetwork.RaiseEvent(SetNewQueuePlayersEvent, actorNumbers, raiseEventOptionsForOther, sendOptions);
         }
 
@@ -105,7 +109,13 @@ namespace Assets.Scripts
                     var actorNumbers = (int[])photonEvent.CustomData;
 
                     List<Player> players = new List<Player>();
-                    foreach(int actorNumber in actorNumbers)
+
+                    if (EventMapManager != null)
+                    {
+                        EventMapManager.ShowCurrentTurn(actorNumbers[0]);
+                    }
+
+                    foreach (int actorNumber in actorNumbers)
                     {
                         var player = PhotonNetwork.PlayerList.First(p => p.ActorNumber == actorNumber);
                         players.Add(player);

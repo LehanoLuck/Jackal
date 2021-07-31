@@ -9,7 +9,7 @@ using UnityEngine.EventSystems;
 public class ClosedTile : Tile
 {
     public OpenedTile LinkedTile;
-
+    
     public OpenedTile OpenTile()
     {
         var tile = Instantiate(LinkedTile, this.transform.parent);
@@ -17,6 +17,7 @@ public class ClosedTile : Tile
         tile.SetTransformPosition(this.fixedPosition);
 
         Destroy(gameObject);
+
         return tile;
     }
 

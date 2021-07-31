@@ -10,15 +10,6 @@ public class WaterTile : BasicTile
 {
     public Ship PirateShip;
 
-    public void EnterShip(Ship ship)
-    {
-        ship.CurrentTile = this;
-        this.PirateShip = ship;
-
-        ship.transform.position = this.transform.position + Vector3.down;
-        MovePiratesOnTile();
-    }
-
     private void MovePiratesOnTile()
     {
         foreach (var pirate in PirateShip.Pirates)
@@ -57,6 +48,15 @@ public class WaterTile : BasicTile
         {
             base.EnterPirate(pirate);
         }
+    }
+
+    public void EnterShip(Ship ship)
+    {
+        ship.CurrentTile = this;
+        this.PirateShip = ship;
+
+        ship.transform.position = this.transform.position + Vector3.down;
+        MovePiratesOnTile();
     }
 
     public void LeaveShip()
@@ -164,22 +164,6 @@ public class WaterTile : BasicTile
             float factor = 0.75f;
             var localScale = new Vector3(factor, factor, factor);
 
-            //for (int i = 0; i < count; i++)
-            //{
-            //    Pirates[i].transform.localScale = localScale;
-            //    switch (i)
-            //    {
-            //        case 0:
-            //            Pirates[i].transform.position = transform.position + Vector3.up * 2.1f;
-            //            break;
-            //        case 1:
-            //            Pirates[i].transform.position = transform.position + Vector3.up * 1.2f + Vector3.left;
-            //            break;
-            //        case 2:
-            //            Pirates[i].transform.position = transform.position + Vector3.up * 1.6f + Vector3.right;
-            //            break;
-            //    }
-            //}
             for (int i = 0; i < count; i++)
             {
                 Pirates[i].transform.localScale = localScale;

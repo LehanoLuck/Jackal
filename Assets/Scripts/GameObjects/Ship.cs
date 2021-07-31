@@ -24,6 +24,35 @@ public class Ship : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHand
 
     public Dictionary<byte, Pirate> ShipPirates = new Dictionary<byte, Pirate>();
 
+    private void AddPirateOnShip(int count)
+    {
+        for (int i = 0; i < count; i++)
+        {
+            byte pirateId = (byte)i;
+            Pirate pirate = PhotonNetwork.Instantiate(PirateTemplate.name, this.transform.position, Quaternion.identity, 0, 
+                new object[] { pirateId, this.Id }).GetComponent<Pirate>();
+        }
+    }
+
+    public void EnterPirate(Pirate pirate)
+    {
+        this.Pirates.Add(pirate);
+
+        if (pirate.IsMoveWithCoin())
+        {
+            AddCoin(pirate.SelfCoin);
+        }
+    }
+
+    public void KillPirateForever(Pirate pirate)
+    {
+        if (pirate.IsMoveWithCoin())
+        {
+            Destroy(pirate.SelfCoin.gameObject);
+        }
+        pirate.DieForever();
+    }
+
     public TrajectoryMovement trajectoryMovement;
 
     public bool isActive = true;
@@ -138,33 +167,7 @@ public class Ship : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHand
             this.AddPirateOnShip(3);
     }
 
-    private void AddPirateOnShip(int count)
-    {
-        for (int i = 0; i < count; i++)
-        {
-            byte pirateId = (byte)i;
-            Pirate pirate = PhotonNetwork.Instantiate(PirateTemplate.name, this.transform.position, Quaternion.identity, 0, new object[] { pirateId, this.Id }).GetComponent<Pirate>();
-        }
-    }
 
-    public void EnterPirate(Pirate pirate)
-    {
-        this.Pirates.Add(pirate);
-
-        if (pirate.IsMoveWithCoin())
-        {
-            AddCoin(pirate.SelfCoin);
-        }
-    }
-
-    public void KillPirateForever(Pirate pirate)
-    {
-        if (pirate.IsMoveWithCoin())
-        {
-            Destroy(pirate.SelfCoin.gameObject);
-        }
-        pirate.DieForever();
-    }
 
     public void LeavePirate(Pirate pirate)
     {

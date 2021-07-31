@@ -61,7 +61,7 @@ public class Pirate : SelectableObject, IDragHandler, IBeginDragHandler, IEndDra
             trajectoryMovement.ShowTrajectory(worldPosition);
         }
     }
-
+    
     public void OnBeginDrag(PointerEventData eventData)
     {
         if (!photonView.IsMine || !isMyTurn || !isActive)

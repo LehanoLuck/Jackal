@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Photon.Pun;
 using Hashtable = ExitGames.Client.Photon.Hashtable;
 using System.Linq;
 using Photon.Realtime;
@@ -18,7 +17,7 @@ public class StepByStepSystem : MonoBehaviour
         var list = players.ToList().Shuffle();
         Players = new Queue<Player>(list);
         CurrentPlayer = Players.Peek();
-        
+
         foreach(var player in players)
         {
             CustomProperties = new Hashtable();
